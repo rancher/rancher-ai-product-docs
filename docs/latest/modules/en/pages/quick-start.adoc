@@ -1,0 +1,152 @@
+include::partial$variables.adoc[]
+
+= Quick start
+:revdate: 2026-01-23
+:page-revdate: {revdate}
+:description: Getting started with {project-name}, installing the {project-name} stack and taking care of prerequisites and authentication.
+
+This quick start explains how to use Ollama to provide LLM capabilities to
+{short-project-name}. You can switch providers after the initial installation
+by referring to xref:/how-tos/how-to-admin.adoc[How-tos for Admin].
+
+== Prerequisites
+
+The current version of the AI Assistant requires the following components:
+
+* https://helm.sh/docs/[Helm installed]
+* Rancher Prime/Community Manager 2.13 or above
+
+Make sure you have the rights to deploy CRD (cluster_admin) on the host
+cluster.
+
+== Technical Requirements
+
+Here is a table of the supported AI components and their requirements.
+
+[NOTE]
+====
+
+You only need to meet the requirements for the specific components you intend
+to run. Requirements will vary based on the specific large language model (LLM)
+you choose to deploy.
+
+====
+
+[cols="1,1,1,1", options="header"]
+|===
+| LLM Model | Requirements | GPU required? | GPU Requirement
+
+| https://ollama.com/library/gpt-oss[gpt-oss:20b]
+| Ollama installed
+|
+| NVIDIA RTX A5000, NVIDIA RTX 4090 or similar (Minimum 24Gb VRAM)
+
+| https://ollama.com/library/qwen3-embedding[qwen3-embedding:4b]
+| Ollama installed
+|
+| NVIDIA RTX A5000, NVIDIA RTX 4090 or similar (Minimum 24Gb VRAM)
+
+| https://ollama.com/library/gpt-oss[gpt-oss:120b]
+| Ollama installed
+|
+| NVIDIA A100 or similar (Minimum 80Gb VRAM)
+
+| Gemini
+| Google Workplace Account
+|
+| N/A
+
+| ChatGPT
+| OpenAI account
+|
+| N/A
+|===
+
+[IMPORTANT]
+====
+
+If you run your own Ollama, please make sure to have at least `gpt-oss:20b` for
+the local model and `qwen3-embedding:4b` for the embeddings model with RAG
+enabled. Consult Ollama documentation on how to pull models.
+
+====
+
+== Install {project-name}
+
+Installation of {short-project-name} is a two step process:
+
+* Deploy the agent and the MCP via the provided Helm chart.
+* Deploy the Rancher UI extension.
+
+=== Install the Agent and the MCP on the local cluster
+
+1. Add the Helm repository:
++
+[source,bash]
+----
+helm repo add rancher-ai https://rancher.github.io/rancher-ai-agent
+helm repo update
+----
+
+2. Deploy the AI Agent chart on the Local cluster.
++
+Create a `values.yaml` file setting (for Ollama):
++
+[source,yaml]
+----
+llmModel: "gpt-oss:20b"
+ollamaUrl: "http://ollama:11434"
+activeLlm: "ollama"
+----
++
+[NOTE]
+====
+
+You can change later those settings and providers in Rancher’s “Global Settings
+-> AI Assistant tabs”
+
+====
++
+[source,bash]
+----
+helm install rancher-ai-agent rancher-ai/agent \
+  --namespace cattle-ai-agent-system \
+  --create-namespace \
+  -f values.yaml
+----
+
+=== Install the UI extension
+
+Open the Rancher Manager UI and navigate to the 'Extensions' page.
+
+. On Rancher Manager, click on Extension in the menu bar.
++
+image::menubar-extension.png[Extension button in menu bar]
++
+. Use the three-dot menu in the upper right and select 'Manage Repositories'.
++
+image::menu-manage-repo.png[Menu to manage repositories]
++
+. Click 'Create' to add the repository.
+. Configure the repository:
+   * **name**: `ai-assistant-ui`
+   * **target**: Git repository containing Helm chart or cluster template
+     definitions
+   * **index URL**: `https://github.com/rancher/rancher-ai-ui`
+   * **Git Branch**: `gh-pages`
++
+image::config-repo-branch.png[Repository create, using the gh-branch]
++
+. Click 'Create'.
+. Wait for the `ai-assistant-ui` repository status to be Active.
+. Go back to the 'Extensions' page and select the 'Available' tab.
++
+image::config-repo-available.png[Configure the available repository.]
++
+. Find the AI Assistant card and click 'Install'.
+. Select a version (or use the latest by default) and click 'Install'.
++
+image::config-repo-install.png[Select a version or use the latest.]
++
+. Once the extension has finished installing, click the 'Reload' button that
+  appears at the top of the page.

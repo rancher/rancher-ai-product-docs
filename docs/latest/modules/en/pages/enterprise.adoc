@@ -1,0 +1,10 @@
+include::partial$variables.adoc[]
+
+= Enterprise support
+:revdate: 2026-01-23
+:page-revdate: {revdate}
+:description: Enterprise support for {project-name}
+
+ifeval::["{build-type}" == "product"]
+SUSE provides full enterprise support for {project-name}.
+endif::[]

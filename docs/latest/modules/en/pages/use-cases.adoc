@@ -1,0 +1,6 @@
+include::partial$variables.adoc[]
+
+= {project-name} use cases
+:revdate: 2026-01-23
+:page-revdate: {revdate}
+:description: A description of certain use cases for {project-name}.

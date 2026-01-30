@@ -1,0 +1,19 @@
+include::partial$variables.adoc[]
+
+* xref:introduction.adoc[Introduction]
+* xref:quick-start.adoc[Quickstart]
+* Explanations and concepts
+** xref:explanations/architecture.adoc[Architecture]
+* How-tos
+** xref:how-tos/how-to-admin.adoc[Administrator how-tos]
+*** xref:how-tos/how-to-admin.adoc#openai[Configure OpenAI]
+*** xref:how-tos/how-to-admin.adoc#gemini[Configure Gemini]
+*** xref:how-tos/how-to-admin.adoc#bedrock[Configure AWS Bedrock]
+*** xref:how-tos/how-to-admin.adoc#rbac[Control Access (RBAC)]
+*** xref:how-tos/how-to-admin.adoc#rag[Control RAG]
+** xref:how-tos/how-to-user.adoc[User how-tos]
+*** xref:how-tos/how-to-user.adoc#liz-interaction[Interact with {short-project-name}]
+*** xref:how-tos/how-to-user.adoc#download-conversation[Download conversation]
+*** xref:how-tos/how-to-user.adoc#manually-switch-agent[Manually switch agent]
+* Reference
+** xref:reference/troubleshooting.adoc[Troubleshooting]

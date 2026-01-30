@@ -1,0 +1,13 @@
+= rancher-ai-product-docs
+
+SUSE product documentation for Liz: The Rancher AI Assistant.
+
+Welcome aboard! Make yourself a fork and contribute.
+
+Clone the fork with `git clone --recurse-submodules`
+
+* Documentation is written in AsciiDoc format. See https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/
+* `make clean`: Cleans the output directories.
+* `make environment`: Sets up the environment for building the docs.
+* `make local`: Build the docs on your local machine.
+* `make preview`: Preview the docs in a web browser.

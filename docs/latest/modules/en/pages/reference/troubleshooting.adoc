@@ -1,0 +1,48 @@
+include::partial$variables.adoc[]
+
+= Troubleshooting
+:revdate: 2026-01-23
+:page-revdate: {revdate}
+:description: Troubleshooting steps for {project-name}.
+
+== Quick troubleshooting
+
+The AI Assistant lives in the Local cluster in the `cattle-ai-agent-system`
+namespace. Agent Logs can be accessed to understand any issues.
+
+[source,bash]
+----
+kubectl get po -n cattle-ai-agent-system
+----
+
+To get logs from the ‘rancher-ai-agent’ pod:
+[source,bash]
+----
+kubectl logs -n cattle-ai-agent-system -l app=rancher-ai-agent
+----
+
+To get logs from the ‘rancher-ai-mcp’ pod:
+[source,bash]
+----
+kubectl logs -n cattle-ai-agent-system -l app=rancher-mcp-server
+----
+
+== Enable debug log
+
+You can enable debugs log, using `log.level=debug` during the helm deployment
+of the Agent.
+
+[source,bash]
+----
+helm upgrade --install --set log.level=debug rancher-ai-agent rancher-ai/agent
+----
+
+== Rancher behind insecure certificate
+
+If your Rancher manager is using a self-signed certificate, please use
+`insecureSkipTls=true` to allow the MCP server to connect to Rancher.
+
+[source,bash]
+----
+helm upgrade --install --set insecureSkipTls=true rancher-ai-agent rancher-ai/agent
+----

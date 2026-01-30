@@ -1,0 +1,22 @@
+include::partial$variables.adoc[]
+
+= How-tos for Users of {project-name}
+:revdate: 2026-01-23
+:page-revdate: {revdate}
+:description: How-tos for users of {project-name}.
+
+[#liz-interaction]
+== Interact with {short-project-name}
+
+The AI Assistant appears as a persistent chat icon. Clicking it opens a side
+panel that maintains the context of your current Rancher view.
+
+[#download-conversation]
+== Download conversation
+
+You can export the conversation history if needed.
+
+[#manually-switch-agent]
+== Manually switch agent
+
+(Coming later)

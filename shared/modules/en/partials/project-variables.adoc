@@ -1,0 +1,10 @@
+ifdef::rai-build-community[]
+:build-type: community
+:project-name: Liz: The Rancher AI Assistant
+:short-project-name: Liz
+endif::[]
+ifndef::rai-build-community[]
+:build-type: product
+:project-name: Liz: The Rancher AI Assistant
+:short-project-name: Liz
+endif::[]

@@ -1,0 +1,82 @@
+include::partial$variables.adoc[]
+
+= Meet {project-name}
+:revdate: 2026-01-23
+:page-revdate: {revdate}
+:description: Introducing {project-name}, a SUSE® Rancher Prime product.
+
+{short-project-name} is a context-aware AI agent integrated into the SUSE
+Rancher Prime environment. Unlike general-purpose AI, {short-project-name} is
+designed to understand the live state of your clusters, namespaces, and
+workloads.
+
+Available as an extension, {short-project-name} resides within your workspace
+to provide real-time guidance where you need it. Whether you are investigating
+a failing deployment or trying to understand a new Kubernetes concept,
+{short-project-name} uses the Model Context Protocol (MCP) to bridge the gap
+between your operational data and actionable insights.
+
+Whether you need a Site Reliability Engineering (SRE) opinion or the help of a
+Rancher expert, {short-project-name} can provide you insight to help you make
+the right decision, faster. The power of {short-project-name} lies in its
+integration with the Rancher UI and its ability to adapt to enterprise security
+requirements.
+
+== Key Components
+
+* **AI Agent**: The bridge between your LLM and the Rancher MCP. The AI agent
+  component enforces guardrails to help protect your environment from LLM
+  hallucinations. It also contains a built-in RAG (Retrieval-Augmented
+  Generation) system to provide the LLM of your choice with the latest Rancher
+  documentation and knowledge base.
+* **Rancher MCP**: The Rancher Model Context Protocol (MCP) is the component in
+  charge of interacting with the Rancher API. It uses the Rancher public API
+  mechanism and exposes it using tailored tools to provide the best user
+  experience.
+* **Rancher Assistant UI Extension**: This component extends the Rancher UI for
+  {short-project-name}. It goes beyond a simple chat window by embedding
+  {short-project-name} where it makes sense in the UI. Integrating the
+  assistant behind error messages and status badges for immediate, contextual
+  support.
+
+== Key Features
+
+=== Flexible Model Sovereignty
+
+Recognizing that security is paramount, {short-project-name} offers freedom of
+choice regarding the underlying AI engine.
+
+* Connect to local or air-gapped LLMs for maximum data privacy using Ollama.
+* Use public engines for high-performance reasoning, such as:
+** OpenAI’s ChatGPT
+** Google’s Gemini
+** AWS Bedrock
+
+== Why an AI Assistant?
+
+As Kubernetes environments scale, the "cognitive load" on operators increases
+exponentially. {short-project-name} addresses three critical challenges in
+modern platform operations:
+
+. **Closing the Skills Gap**: Kubernetes has a notoriously steep learning
+  curve. {short-project-name} provides immediate, expert-level support to
+  engineers who may be unfamiliar with specific resources or error types,
+  reducing the reliance on senior "hero" engineers.
+. **Accelerating Resolution Time**: Instead of manually examining logs or
+  searching external documentation, operators can ask {short-project-name} to
+  summarize the state of a namespace or explain a specific failure, reducing
+  the mean time to resolution (MTTR).
+. **Proactive System Awareness**: {short-project-name} enables a proactive
+  operational stance. By asking questions like "Which deployments are currently
+  unhealthy?" or "Summarize the health of this cluster," teams can identify and
+  fix issues before they escalate into outages.
+
+[NOTE]
+====
+
+While {short-project-name} is a powerful assistant, it's designed to extend
+human knowledge, not replace it. Users should verify AI recommendations and
+follow their organization's standard security practices when applying suggested
+fixes.
+
+====

@@ -1,0 +1,236 @@
+include::partial$variables.adoc[]
+
+= How-tos for the Administrator of {project-name}
+:revdate: 2026-01-23
+:page-revdate: {revdate}
+:description: How-tos for the administrator of {project-name}.
+
+[#openai]
+== Configure OpenAI provider
+
+=== Select OpenAI via the UI
+
+Navigate to the ‘Global Settings’ -> ‘AI Assistant’ tab.
+
+. Select OpenAI, provide an OpenAI API Key. Head to
+  http://platform.openai.com[platform.openai.com] to sign up to OpenAI and
+  generate an API key.
+. Select which model to use.
+. Click on Apply, the agent will restart which may take a few seconds.
++
+image::openai-config.png[OpenAI configuration screen]
+
+=== Select OpenAI via the helm chart
+
+Use the following helm values to configure OpenAI from the Agent helm chart:
+
+[source,yaml]
+----
+llmModel: "gpt-o4"
+openaiLlmModel: "gpt-o4"
+openaiApiKey: "xxxxxxxxx"
+----
+
+Update the chart:
+[source,bash]
+----
+helm upgrade --install -f values.yaml rancher-ai-agent rancher-ai/agent
+----
+
+=== Configure an OpenAI like endpoint
+
+From the UI or via the helm chart you can set an openAI like endpoint.
+
+* **On the UI**: Click on the Advanced settings section. Enter a valid
+  endpoint, and click on apply.
+* **In the helm chart**: Set the `openaiUrl` value.
++
+image:openai-like-end.png[OpenAI like endpoint configuration screen]
+
+[source,bash]
+----
+helm upgrade --install --set openaiUrl="https://myendpoint.example" rancher-ai-agent rancher-ai/agent
+----
+
+[#gemini]
+== Configure Gemini provider
+
+=== Select Gemini via the UI
+
+Navigate to the ‘Global Settings’ -> ‘AI Assistant’ tab.
+
+. Select Gemini, provide a Google API Key via
+  https://aistudio.google.com/[Google AI Studio] or create an API key
+  credential in GCP portal.
+. Select which model to use.
+. Click on Apply, the agent will restart which may take a few seconds.
++
+image::gemini-config.png[Gemini configuration screen]
+
+=== Select Gemini via the helm chart
+
+Use the following helm values to configure Gemini from the Agent helm chart:
+
+[source,yaml]
+----
+llmModel: "gemini-2.0-flash"
+geminiLlmModel: "gemini-2.0-flash"
+googleApiKey: "xxxxxxxxx"
+----
+
+Update the chart:
+[source,bash]
+----
+helm upgrade --install -f values.yaml rancher-ai-agent rancher-ai/agent
+----
+
+[#bedrock]
+== Configure AWS Bedrock provider
+
+=== Select AWS Bedrock via the UI
+
+Navigate to the ‘Global Settings’ -> ‘AI Assistant’ tab.
+
+. Select Bedrock, provide a Bedrock Bearer Token (recommended). Follow
+  https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys-generate.html[AWS
+  procedure] to generate a Bedrock API Key.
+. Enter a valid AWS Region.
+. Select which model to use by going to AWS Bedrock Cross Region Inference tab,
+  copy the Inference profile ID.
+
+[WARNING]
+====
+
+Choose a model that supports Tools call. Currently the **Anthropic Claude
+Opus** model has been tested.
+
+====
+
+. Click on Apply, the agent will restart which may take a few seconds.
++
+image::bedrock-config.png[AWS Bedrock configuration screen]
+
+=== Select AWS Bedrock via the helm chart
+
+Use the following helm values to configure AWS Bedrock from the Agent helm
+chart:
+
+[source,yaml]
+----
+llmModel: "global.anthropic.claude-opus-4-5-20251101-v1:0"
+bedrockLlmModel: "global.anthropic.claude-opus-4-5-20251101-v1:0"
+awsBedrock:
+  bearerToken: "xxxxxxxx"
+  region: "us-east-1"
+----
+
+Update the chart:
+
+[source,bash]
+----
+helm upgrade --install -f values.yaml rancher-ai-agent rancher-ai/agent
+----
+
+[#rbac]
+== Control Access (RBAC)
+
+To use the AI agent a user needs to get permission to the `llm-config` secret
+and the `http:rancher-ai-agent:80` services/proxy.
+
+[tabs]
+====
+Global Role::
++
+--
+You can create the following **Global Role** on the local cluster or using Rancher UI on Users & Authentication -> Role Templates.
+
+[source,yaml]
+----
+apiVersion: management.cattle.io/v3
+displayName: ai
+kind: GlobalRole
+metadata:
+  name: ai-agent
+namespacedRules:
+  cattle-ai-agent-system:
+  - apiGroups:
+    - ''
+    resourceNames:
+    - http:rancher-ai-agent:80
+    resources:
+    - services/proxy
+    verbs:
+    - get
+  - apiGroups:
+    - ''
+    resourceNames:
+    - llm-config
+    resources:
+    - secrets
+    verbs:
+    - get
+----
+
+Assign this role to any user that needs to access {short-project-name} on the
+local cluster. This will be improved in the future with a native role.
+
+--
+====
+
+[#rag]
+== Configure RAG
+
+This feature is still in alpha stage and heavy development and improvement. The
+Rancher AI Assistant utilizes an internal Retrieval Augmented Generation (RAG)
+system, which is continually supplied with current Rancher documentation.
+
+=== Select an Embeddings
+
+* **Ollama**: We recommend using `qwen3-embedding:4b`.
+* **OpenAI**: Consult the list of supported models.
+* **Gemini**: Consult the list of supported models.
+* **AWS Bedrock**: Consult the list of supported models.
+
+=== Configure RAG via the Helm chart (recommended)
+
+Use the following helm values to configure RAG from the Agent helm chart:
+
+[source,yaml]
+----
+# Enable RAG with embedded rancher documentation
+rag:
+  enabled: true
+  embeddings_model: "qwen3-embedding:4b"
+  pvc:
+----
+
+You can configure an existing Persistent Volume Claim using `pvc`. This will
+mount a volume to the Rancher AI Agent and significantly improve startup time
+for the RAG if the Agent pod restarts.
+
+Update the chart:
+
+[source,bash]
+----
+helm upgrade --install -f values.yaml rancher-ai-agent rancher-ai/agent
+----
+
+=== Configure RAG via the UI
+
+. Navigate to the ‘Global Settings’ -> ‘AI Assistant’ tab.
+. Click on **Show Advanced**.
++
+image::config-rag-ui.png[Configure RAG via the UI]
++
+. Click on **Enable RAG for this assistant**.
+. Select an Embeddings Model to use for the RAG.
+. Click on Apply and the agent will restart which may take a few minutes to
+  initiate the RAG.
+
+[NOTE]
+====
+
+Please note that during the initialisation, {short-project-name} is not
+available.
+
+====

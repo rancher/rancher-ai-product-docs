@@ -1,0 +1,6 @@
+name: rancher-ai
+title: Rancher AI
+version: latest
+start_page: en:introduction.adoc
+nav:
+- modules/en/nav.adoc
