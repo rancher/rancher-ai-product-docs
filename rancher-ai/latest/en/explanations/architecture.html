@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Architecture | Rancher AI  latest</title>
+    <link rel="prev" href="../quick-start.html">
+    <link rel="next" href="../how-tos/how-to-admin.html">
+    <meta name="description" content="An introduction to the architecture of Liz: The Rancher AI Assistant.">
+    <meta name="generator" content="Antora 3.1.14">
+    <link rel="stylesheet" href="../../../../_/css/site.css">
+<meta http-equiv="last-modified" content="2026-01-23"/>
+<link rel="stylesheet" href="../../../../_/css/search.css">
+<link rel="icon" href="../../../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="../../../../_/css/font-styles.css">
+<link rel="stylesheet" href="../../../../_/fonts/css/all.css">
+<link rel="stylesheet" href="../../../../_/css/site-extra.css">
+<link rel="stylesheet" href="../../../../_/css/vendor/tabs.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap&family=SUSE+Mono:ital,wght@0,100..800;1,100..800" rel="stylesheet">
+<link href="https://documentation.suse.com/docserv/res/fonts/poppins/poppins.css" rel="stylesheet">
+<link rel="stylesheet" href="../../../../_/css/vendor/light.css">
+<script src="/docserv/res/lightheaded/analytics.js" type="text/javascript"></script>
+<script type="module">
+  import { defineCustomElements, setAssetPath } from 'https://d12w0ryu9hjsx8.cloudfront.net/shared-header/1.9/shared-header.esm.js';
+  defineCustomElements();
+  setAssetPath("https://d12w0ryu9hjsx8.cloudfront.net/shared-header/1.9/assets");
+</script>
+<!-- Default English link -->
+<link href="https://documentation.suse.com/cloudnative/rancher-ai/latest/en/explanations/architecture.html" hreflang="x-default" rel="alternate"/>
+<!-- Link for the currently processed page -->
+<link href="https://documentation.suse.com/cloudnative/rancher-ai/latest/en/explanations/architecture.html" hrefLang="en-US" rel="alternate" />
+
+<!-- JSON-LD for doc metadata -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "Architecture | Liz: The Rancher AI Assistant latest",
+  "headline": "Architecture",
+  "description": "An introduction to the architecture of Liz: The Rancher AI Assistant.",
+  "inLanguage": "en",
+  "dateModified": "2026-01-23T00:00:00Z",
+  "author": {
+    "@type": "Organization",
+    "name": "SUSE Product & Solution Documentation Team",
+    "url": "https://documentation.suse.com"
+  },
+  "mentions": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Liz: The Rancher AI Assistant",
+      "softwareVersion": "latest",
+      "applicationCategory": "Cloud Infrastructure",
+      "operatingSystem": "Linux"
+    }
+  ],
+  "publisher": {
+    "@type": "Organization",
+    "name": "SUSE",
+    "url": "https://documentation.suse.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.suse.com/assets/img/suse-white-logo-green.svg"
+    }
+  }
+}
+</script>
+<!-- end JSON-LD for doc metadata -->
+    <script>var uiRootPath = '../../../../_'</script>
+  </head>
+  <body class="article">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs'; mermaid.initialize({"startOnLoad":true});</script><shared-header
+language="en"
+languages='{
+    "en": { "label": "English", "url": "https://documentation.suse.com/en-us/" },
+    "de": { "label": "Deutsch", "url": "https://documentation.suse.com/de-de/" },
+    "fr": { "label": "Français", "url": "https://documentation.suse.com/fr-fr/" },
+    "es": { "label": "Español", "url": "https://documentation.suse.com/es-es/" },
+    "zh_CN": { "label": "中文", "url": "https://documentation.suse.com/zh-cn/" },
+    "pt_BR": { "label": "Português Brasileiro", "url": "https://documentation.suse.com/pt-br/" }
+}'
+enable-search='false'>
+</shared-header>
+
+<!-- Leaving as a comment, I expect it will be required again next year.
+<a target=_blank"" class="survey-link" href="https://suselinux.fra1.qualtrics.com/jfe/form/SV_bEiGZbUNzLD8Tcy"> Documentation survey </a>
+--><div class="body">
+<div class="nav-container" data-component="rancher-ai" data-version="latest">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title">Rancher AI</h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../introduction.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../quick-start.html">Quickstart</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle" aria-label="Toggle expand/collapse"></button>
+    <span class="nav-text">Explanations and concepts</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="architecture.html">Architecture</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle" aria-label="Toggle expand/collapse"></button>
+    <span class="nav-text">How-tos</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle" aria-label="Toggle expand/collapse"></button>
+    <a class="nav-link" href="../how-tos/how-to-admin.html">Administrator how-tos</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../how-tos/how-to-admin.html#openai">Configure OpenAI</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../how-tos/how-to-admin.html#gemini">Configure Gemini</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../how-tos/how-to-admin.html#bedrock">Configure AWS Bedrock</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../how-tos/how-to-admin.html#rbac">Control Access (RBAC)</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../how-tos/how-to-admin.html#rag">Control RAG</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle" aria-label="Toggle expand/collapse"></button>
+    <a class="nav-link" href="../how-tos/how-to-user.html">User how-tos</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../how-tos/how-to-user.html#liz-interaction">Interact with Liz</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../how-tos/how-to-user.html#download-conversation">Download conversation</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../how-tos/how-to-user.html#manually-switch-agent">Manually switch agent</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle" aria-label="Toggle expand/collapse"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/troubleshooting.html">Troubleshooting</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Rancher AI</span>
+    <span class="version">latest</span>
+  </div>
+  <ul class="components">
+        <li class="component is-current">
+          <div class="title"><a href="../introduction.html">Rancher AI</a></div>
+          <ul class="versions">
+            <li class="version is-current is-latest">
+              <a href="../introduction.html">latest</a>
+            </li>
+          </ul>
+        </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+<ul>
+    <li>
+      <a class="home-link-dsc" href="https://documentation.suse.com/" title="documentation.suse.com" aria-label="SUSE Documentation Home"></a>
+    </li>
+    <li>
+      <a href="https://documentation.suse.com/cloudnative/rancher-ai" title="Liz: The Rancher AI Assistant" aria-label="SUSE Documentation - Liz: The Rancher AI Assistant">
+        Liz: The Rancher AI Assistant
+      </a>
+    </li>
+      <li>
+          Explanations and concepts
+      </li>
+  </ul>
+</nav>  <div class="edit-this-page"><a href="https://github.com/rancher/rancher-ai-product-docs/edit/main/docs/latest/modules/en/pages/explanations/architecture.adoc"><strong>Edit</strong></a></div>
+        <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <label class="visual-search-label-bc" for="search-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+          <input label="Search" aria-label="Search" id="search-input" type="text" placeholder="Search the docs" >
+          <label class="filter checkbox" style="display: none">
+            <input type="checkbox" data-facet-filter="component:rancher-ai" checked> Only this project
+          </label>
+        </div>
+      </div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="On this page" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Architecture</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The system is composed of a UI Extension for user interaction, a ReAct Agent
+for intelligent decision-making, and an MCP Server that acts as the
+intermediary between the agent and the Rancher API.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_components"><a class="anchor" href="#_components"></a>Components</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_react_agent"><a class="anchor" href="#_react_agent"></a><a href="https://github.com/rancher-sandbox/rancher-ai-agent">ReAct Agent</a></h3>
+<div class="paragraph">
+<p>The ReAct Agent is the orchestrator of the system’s intelligence. It leverages
+a Large Language Model (LLM) as its reasoning engine, while the agent itself
+provides the structure, coordination, and secure execution of actions.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>LLM (Reasoning Engine)</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Interprets user inputs expressed in natural language.</p>
+</li>
+<li>
+<p>Performs the reasoning: breaks down complex requests into smaller steps.</p>
+</li>
+<li>
+<p>Decides what should happen next (keep reasoning vs. take action).</p>
+</li>
+<li>
+<p>Synthesizes outputs from tools into clear, human-readable responses.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Agent (Orchestrator)</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Wraps the LLM with the ReAct (Reason + Act).</p>
+</li>
+<li>
+<p>Decides when to let the LLM keep reasoning or when to act on its
+instructions.</p>
+</li>
+<li>
+<p>Calls external tools (via the MCP Server) as directed by the LLM.</p>
+</li>
+<li>
+<p>Ensures secure interactions by passing the user’s Rancher token to the MCP
+server for authentication and authorization.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_mcp_server"><a class="anchor" href="#_mcp_server"></a><a href="https://github.com/rancher-sandbox/rancher-ai-mcp">MCP Server</a></h3>
+<div class="paragraph">
+<p>The MCP Server acts as a secure, controlled gateway between the ReAct Agent and the Rancher and Kubernetes APIs. Its functions include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Exposing Tools</strong>: It provides a set of well-defined, safe tools (API
+endpoints) that the ReAct Agent can call. These tools abstract away the
+complexity of direct Rancher/Kubernetes API interactions.</p>
+</li>
+<li>
+<p><strong>Interaction with Rancher</strong>: It translates tool calls from the agent into
+the appropriate API requests to the Rancher management server, retrieving or
+modifying resources as needed.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ui_extension"><a class="anchor" href="#_ui_extension"></a>UI Extension</h3>
+<div class="paragraph">
+<p>The UI Extension provides the user-facing chat interface within the Rancher
+dashboard. It is designed to be a seamless part of the Rancher experience and
+is responsible for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>User Input</strong>: It captures user queries and sends them to the ReAct Agent.</p>
+</li>
+<li>
+<p><strong>Displaying Responses</strong>: It receives responses from the ReAct Agent and
+presents them in a chat-like format.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_how_it_works_flow"><a class="anchor" href="#_how_it_works_flow"></a>How It Works (Flow)</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>User Request &#8594; Agent &#8594; LLM</strong>: The user submits a natural language query
+through the UI Extension.</p>
+</li>
+<li>
+<p><strong>LLM Reasoning</strong>: The LLM interprets the request, reasons about the problem,
+and proposes a plan.</p>
+</li>
+<li>
+<p><strong>Agent Acting</strong>: If the plan requires external operations, the agent calls
+the appropriate MCP Server tools.</p>
+</li>
+<li>
+<p><strong>LLM Response Formulation</strong>: The LLM takes the tool outputs and crafts a
+coherent, human-readable response.</p>
+</li>
+<li>
+<p><strong>Response &#8594; User</strong>: The answer is returned to the user through the UI
+Extension.</p>
+</li>
+</ol>
+</div>
+<div class="imageblock"><div class="mermaid content" style=" ">graph TD
+
+subgraph "A. User Interaction"
+User[User / Analyst / DevOps]
+end
+
+subgraph "B. Rancher AI Assistant (Processing)"
+Agent(Agent)
+LLM(LLM local or online)
+MCPServer(MCP Server)
+end
+
+subgraph "C. Infrastructure"
+Kubernetes(Clusters)
+end
+
+%% Step 1: User sends intent
+User -- "1. Query " --> Agent
+
+%% Step 2 & 3: Initial Reasoning Loop
+Agent -- "2. Tool Planning Request" --> LLM
+LLM -- "3. Action Plan (e.g., list_pods tool)" --> Agent
+
+%% Step 4: Action Execution
+Agent -- "4. Execute Tool via MCP" --> MCPServer
+
+%% Step 5 & 6: Cluster Interaction
+MCPServer -- "5. Secure Action " --> Kubernetes
+Kubernetes -- "6. Raw Results / Status" --> MCPServer
+
+%% Step 7: Raw results back to Agent
+MCPServer -- "7. Raw Tool Output" --> Agent
+
+%% Step 8 & 9: Final Interpretation Loop (Crucial step)
+Agent -- "8. Interpret Raw Output" --> LLM
+LLM -- "9. Formatted Final Answer" --> Agent
+
+%% Step 10: Final Response to User
+Agent -- "10. Final Conversational Response" --> User
+
+%% Styles
+style User fill:#e0f2f7,stroke:#1e88e5,stroke-width:2px
+style Agent fill:#d4edda,stroke:#28a745,stroke-width:2px
+style LLM fill:#fff3cd,stroke:#ffc107,stroke-width:2px
+style MCPServer fill:#cce5ff,stroke:#007bff,stroke-width:2px
+style Kubernetes fill:#f8d7da,stroke:#dc3545,stroke-width:2px</div></div>
+<div class="paragraph">
+<p>An alternative image for the architecture is also shown:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/arch-alternative.jpg" alt="An alternative image for architecture.">
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="../quick-start.html">Quickstart</a></span>
+  <span class="next"><a href="../how-tos/how-to-admin.html">Administrator how-tos</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<script src="../../../../_/js/site.js"></script>
+<script async src="../../../../_/js/vendor/highlight.js"></script>
+<script src="../../../../_/js/vendor/lunr.js"></script>
+<script src="../../../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../../../.." data-snippet-length="100" data-stylesheet="../../../../_/css/search.css"></script>
+<script async src="../../../../search-index.js"></script>
+<script src="../../../../_/js/vendor/langSelection.js"></script>
+<script async src="../../../../_/js/vendor/tabs.js"></script>
+
+
+<script src="../../../../_/js/CNLanguageSwitcher.js"></script>
+  </body>
+</html>

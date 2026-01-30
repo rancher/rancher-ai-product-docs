@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How-tos for the Administrator of Liz: The Rancher AI Assistant | Rancher AI  latest</title>
+    <link rel="prev" href="../explanations/architecture.html">
+    <link rel="next" href="how-to-user.html">
+    <meta name="description" content="How-tos for the administrator of Liz: The Rancher AI Assistant.">
+    <meta name="generator" content="Antora 3.1.14">
+    <link rel="stylesheet" href="../../../../_/css/site.css">
+<meta http-equiv="last-modified" content="2026-01-23"/>
+<link rel="stylesheet" href="../../../../_/css/search.css">
+<link rel="icon" href="../../../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="../../../../_/css/font-styles.css">
+<link rel="stylesheet" href="../../../../_/fonts/css/all.css">
+<link rel="stylesheet" href="../../../../_/css/site-extra.css">
+<link rel="stylesheet" href="../../../../_/css/vendor/tabs.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap&family=SUSE+Mono:ital,wght@0,100..800;1,100..800" rel="stylesheet">
+<link href="https://documentation.suse.com/docserv/res/fonts/poppins/poppins.css" rel="stylesheet">
+<link rel="stylesheet" href="../../../../_/css/vendor/light.css">
+<script src="/docserv/res/lightheaded/analytics.js" type="text/javascript"></script>
+<script type="module">
+  import { defineCustomElements, setAssetPath } from 'https://d12w0ryu9hjsx8.cloudfront.net/shared-header/1.9/shared-header.esm.js';
+  defineCustomElements();
+  setAssetPath("https://d12w0ryu9hjsx8.cloudfront.net/shared-header/1.9/assets");
+</script>
+<!-- Default English link -->
+<link href="https://documentation.suse.com/cloudnative/rancher-ai/latest/en/how-tos/how-to-admin.html" hreflang="x-default" rel="alternate"/>
+<!-- Link for the currently processed page -->
+<link href="https://documentation.suse.com/cloudnative/rancher-ai/latest/en/how-tos/how-to-admin.html" hrefLang="en-US" rel="alternate" />
+
+<!-- JSON-LD for doc metadata -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "How-tos for the Administrator of Liz: The Rancher AI Assistant | Liz: The Rancher AI Assistant latest",
+  "headline": "How-tos for the Administrator of Liz: The Rancher AI Assistant",
+  "description": "How-tos for the administrator of Liz: The Rancher AI Assistant.",
+  "inLanguage": "en",
+  "dateModified": "2026-01-23T00:00:00Z",
+  "author": {
+    "@type": "Organization",
+    "name": "SUSE Product & Solution Documentation Team",
+    "url": "https://documentation.suse.com"
+  },
+  "mentions": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Liz: The Rancher AI Assistant",
+      "softwareVersion": "latest",
+      "applicationCategory": "Cloud Infrastructure",
+      "operatingSystem": "Linux"
+    }
+  ],
+  "publisher": {
+    "@type": "Organization",
+    "name": "SUSE",
+    "url": "https://documentation.suse.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.suse.com/assets/img/suse-white-logo-green.svg"
+    }
+  }
+}
+</script>
+<!-- end JSON-LD for doc metadata -->
+    <script>var uiRootPath = '../../../../_'</script>
+  </head>
+  <body class="article">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs'; mermaid.initialize({"startOnLoad":true});</script><shared-header
+language="en"
+languages='{
+    "en": { "label": "English", "url": "https://documentation.suse.com/en-us/" },
+    "de": { "label": "Deutsch", "url": "https://documentation.suse.com/de-de/" },
+    "fr": { "label": "Français", "url": "https://documentation.suse.com/fr-fr/" },
+    "es": { "label": "Español", "url": "https://documentation.suse.com/es-es/" },
+    "zh_CN": { "label": "中文", "url": "https://documentation.suse.com/zh-cn/" },
+    "pt_BR": { "label": "Português Brasileiro", "url": "https://documentation.suse.com/pt-br/" }
+}'
+enable-search='false'>
+</shared-header>
+
+<!-- Leaving as a comment, I expect it will be required again next year.
+<a target=_blank"" class="survey-link" href="https://suselinux.fra1.qualtrics.com/jfe/form/SV_bEiGZbUNzLD8Tcy"> Documentation survey </a>
+--><div class="body">
+<div class="nav-container" data-component="rancher-ai" data-version="latest">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title">Rancher AI</h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../introduction.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../quick-start.html">Quickstart</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle" aria-label="Toggle expand/collapse"></button>
+    <span class="nav-text">Explanations and concepts</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../explanations/architecture.html">Architecture</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle" aria-label="Toggle expand/collapse"></button>
+    <span class="nav-text">How-tos</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <button class="nav-item-toggle" aria-label="Toggle expand/collapse"></button>
+    <a class="nav-link" href="how-to-admin.html">Administrator how-tos</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#openai">Configure OpenAI</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#gemini">Configure Gemini</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#bedrock">Configure AWS Bedrock</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#rbac">Control Access (RBAC)</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#rag">Control RAG</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle" aria-label="Toggle expand/collapse"></button>
+    <a class="nav-link" href="how-to-user.html">User how-tos</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="how-to-user.html#liz-interaction">Interact with Liz</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="how-to-user.html#download-conversation">Download conversation</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="how-to-user.html#manually-switch-agent">Manually switch agent</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle" aria-label="Toggle expand/collapse"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/troubleshooting.html">Troubleshooting</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Rancher AI</span>
+    <span class="version">latest</span>
+  </div>
+  <ul class="components">
+        <li class="component is-current">
+          <div class="title"><a href="../introduction.html">Rancher AI</a></div>
+          <ul class="versions">
+            <li class="version is-current is-latest">
+              <a href="../introduction.html">latest</a>
+            </li>
+          </ul>
+        </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+<ul>
+    <li>
+      <a class="home-link-dsc" href="https://documentation.suse.com/" title="documentation.suse.com" aria-label="SUSE Documentation Home"></a>
+    </li>
+    <li>
+      <a href="https://documentation.suse.com/cloudnative/rancher-ai" title="Liz: The Rancher AI Assistant" aria-label="SUSE Documentation - Liz: The Rancher AI Assistant">
+        Liz: The Rancher AI Assistant
+      </a>
+    </li>
+      <li>
+          How-tos
+      </li>
+  </ul>
+</nav>  <div class="edit-this-page"><a href="https://github.com/rancher/rancher-ai-product-docs/edit/main/docs/latest/modules/en/pages/how-tos/how-to-admin.adoc"><strong>Edit</strong></a></div>
+        <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <label class="visual-search-label-bc" for="search-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+          <input label="Search" aria-label="Search" id="search-input" type="text" placeholder="Search the docs" >
+          <label class="filter checkbox" style="display: none">
+            <input type="checkbox" data-facet-filter="component:rancher-ai" checked> Only this project
+          </label>
+        </div>
+      </div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="On this page" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">How-tos for the Administrator of Liz: The Rancher AI Assistant</h1>
+<div class="sect1">
+<h2 id="openai"><a class="anchor" href="#openai"></a>Configure OpenAI provider</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_select_openai_via_the_ui"><a class="anchor" href="#_select_openai_via_the_ui"></a>Select OpenAI via the UI</h3>
+<div class="paragraph">
+<p>Navigate to the ‘Global Settings’ &#8594; ‘AI Assistant’ tab.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Select OpenAI, provide an OpenAI API Key. Head to
+<a href="http://platform.openai.com">platform.openai.com</a> to sign up to OpenAI and
+generate an API key.</p>
+</li>
+<li>
+<p>Select which model to use.</p>
+</li>
+<li>
+<p>Click on Apply, the agent will restart which may take a few seconds.</p>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/openai-config.png" alt="OpenAI configuration screen">
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_select_openai_via_the_helm_chart"><a class="anchor" href="#_select_openai_via_the_helm_chart"></a>Select OpenAI via the helm chart</h3>
+<div class="paragraph">
+<p>Use the following helm values to configure OpenAI from the Agent helm chart:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">llmModel: "gpt-4o"
+openaiLlmModel: "gpt-4o"
+openaiApiKey: "xxxxxxxxx"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update the chart:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">helm upgrade --install --namespace cattle-ai-agent-system --create-namespace -f values.yaml rancher-ai-agent rancher-ai/agent</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configure_an_openai_like_endpoint"><a class="anchor" href="#_configure_an_openai_like_endpoint"></a>Configure an OpenAI like endpoint</h3>
+<div class="paragraph">
+<p>From the UI or via the helm chart you can set an openAI like endpoint.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>On the UI</strong>: Click on the Advanced settings section. Enter a valid
+endpoint, and click on apply.</p>
+</li>
+<li>
+<p><strong>In the helm chart</strong>: Set the <code>openaiUrl</code> value.</p>
+<div class="paragraph">
+<p><span class="image"><img src="../_images/openai-like-end.png" alt="OpenAI like endpoint configuration screen"></span></p>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">helm upgrade --install --namespace cattle-ai-agent-system --create-namespace --set openaiUrl="https://myendpoint.example" rancher-ai-agent rancher-ai/agent</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="gemini"><a class="anchor" href="#gemini"></a>Configure Gemini provider</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_select_gemini_via_the_ui"><a class="anchor" href="#_select_gemini_via_the_ui"></a>Select Gemini via the UI</h3>
+<div class="paragraph">
+<p>Navigate to the ‘Global Settings’ &#8594; ‘AI Assistant’ tab.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Select Gemini, provide a Google API Key via
+<a href="https://aistudio.google.com/">Google AI Studio</a> or create an API key
+credential in GCP portal.</p>
+</li>
+<li>
+<p>Select which model to use.</p>
+</li>
+<li>
+<p>Click on Apply, the agent will restart which may take a few seconds.</p>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/gemini-config.png" alt="Gemini configuration screen">
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_select_gemini_via_the_helm_chart"><a class="anchor" href="#_select_gemini_via_the_helm_chart"></a>Select Gemini via the helm chart</h3>
+<div class="paragraph">
+<p>Use the following helm values to configure Gemini from the Agent helm chart:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">llmModel: "gemini-2.0-flash"
+geminiLlmModel: "gemini-2.0-flash"
+googleApiKey: "xxxxxxxxx"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update the chart:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">helm upgrade --install --namespace cattle-ai-agent-system --create-namespace -f values.yaml rancher-ai-agent rancher-ai/agent</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="bedrock"><a class="anchor" href="#bedrock"></a>Configure AWS Bedrock provider</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_select_aws_bedrock_via_the_ui"><a class="anchor" href="#_select_aws_bedrock_via_the_ui"></a>Select AWS Bedrock via the UI</h3>
+<div class="paragraph">
+<p>Navigate to the ‘Global Settings’ &#8594; ‘AI Assistant’ tab.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Select Bedrock, provide a Bedrock Bearer Token (recommended). Follow
+<a href="https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys-generate.html">AWS
+procedure</a> to generate a Bedrock API Key.</p>
+</li>
+<li>
+<p>Enter a valid AWS Region.</p>
+</li>
+<li>
+<p>Select which model to use by going to AWS Bedrock Cross Region Inference tab,
+copy the Inference profile ID.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Choose a model that supports Tools call. Currently the <strong>Anthropic Claude
+Opus</strong> model has been tested.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Click on Apply, the agent will restart which may take a few seconds.</p>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/bedrock-config.png" alt="AWS Bedrock configuration screen">
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_select_aws_bedrock_via_the_helm_chart"><a class="anchor" href="#_select_aws_bedrock_via_the_helm_chart"></a>Select AWS Bedrock via the helm chart</h3>
+<div class="paragraph">
+<p>Use the following helm values to configure AWS Bedrock from the Agent helm
+chart:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">llmModel: "global.anthropic.claude-opus-4-5-20251101-v1:0"
+bedrockLlmModel: "global.anthropic.claude-opus-4-5-20251101-v1:0"
+awsBedrock:
+  bearerToken: "xxxxxxxx"
+  region: "us-east-1"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update the chart:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">helm upgrade --install --namespace cattle-ai-agent-system --create-namespace -f values.yaml rancher-ai-agent rancher-ai/agent</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rbac"><a class="anchor" href="#rbac"></a>Control Access (RBAC)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To use the AI agent a user needs to get permission to the <code>llm-config</code> secret
+and the <code>http:rancher-ai-agent:80</code> services/proxy.</p>
+</div>
+<div id="_tabs_1" class="openblock tabs is-sync is-loading">
+<div class="content">
+<div class="ulist tablist">
+<ul>
+<li id="_tabs_1_global_role" class="tab">
+<p>Global Role</p>
+</li>
+</ul>
+</div>
+<div id="_tabs_1_global_role--panel" class="tabpanel" aria-labelledby="_tabs_1_global_role">
+<div class="paragraph">
+<p>You can create the following <strong>Global Role</strong> on the local cluster or using Rancher UI on Users &amp; Authentication &#8594; Role Templates.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: management.cattle.io/v3
+displayName: ai
+kind: GlobalRole
+metadata:
+  name: ai-agent
+namespacedRules:
+  cattle-ai-agent-system:
+  - apiGroups:
+    - ''
+    resourceNames:
+    - http:rancher-ai-agent:80
+    resources:
+    - services/proxy
+    verbs:
+    - get
+  - apiGroups:
+    - ''
+    resourceNames:
+    - llm-config
+    resources:
+    - secrets
+    verbs:
+    - get</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Assign this role to any user that needs to access Liz on the
+local cluster. This will be improved in the future with a native role.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rag"><a class="anchor" href="#rag"></a>Configure RAG</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This feature is still in alpha stage and heavy development and improvement. The
+Rancher AI Assistant utilizes an internal Retrieval Augmented Generation (RAG)
+system, which is continually supplied with current Rancher documentation.</p>
+</div>
+<div class="sect2">
+<h3 id="_select_an_embeddings"><a class="anchor" href="#_select_an_embeddings"></a>Select an Embeddings</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Ollama</strong>: We recommend using <code>qwen3-embedding:4b</code>.</p>
+</li>
+<li>
+<p><strong>OpenAI</strong>: Consult the list of supported models.</p>
+</li>
+<li>
+<p><strong>Gemini</strong>: Consult the list of supported models.</p>
+</li>
+<li>
+<p><strong>AWS Bedrock</strong>: Consult the list of supported models.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configure_rag_via_the_helm_chart_recommended"><a class="anchor" href="#_configure_rag_via_the_helm_chart_recommended"></a>Configure RAG via the Helm chart (recommended)</h3>
+<div class="paragraph">
+<p>Use the following helm values to configure RAG from the Agent helm chart:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml"># Enable RAG with embedded rancher documentation
+rag:
+  enabled: true
+  embeddings_model: "qwen3-embedding:4b"
+  pvc:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can configure an existing Persistent Volume Claim using <code>pvc</code>. This will
+mount a volume to the Rancher AI Agent and significantly improve startup time
+for the RAG if the Agent pod restarts.</p>
+</div>
+<div class="paragraph">
+<p>Update the chart:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">helm upgrade --install --namespace cattle-ai-agent-system --create-namespace -f values.yaml rancher-ai-agent rancher-ai/agent</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configure_rag_via_the_ui"><a class="anchor" href="#_configure_rag_via_the_ui"></a>Configure RAG via the UI</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Navigate to the ‘Global Settings’ &#8594; ‘AI Assistant’ tab.</p>
+</li>
+<li>
+<p>Click on <strong>Show Advanced</strong>.</p>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/config-rag-ui.png" alt="Configure RAG via the UI">
+</div>
+</div>
+</li>
+<li>
+<p>Click on <strong>Enable RAG for this assistant</strong>.</p>
+</li>
+<li>
+<p>Select an Embeddings Model to use for the RAG.</p>
+</li>
+<li>
+<p>Click on Apply and the agent will restart which may take a few minutes to
+initiate the RAG.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Please note that during the initialisation, Liz is not
+available.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="../explanations/architecture.html">Architecture</a></span>
+  <span class="next"><a href="how-to-user.html">User how-tos</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<script src="../../../../_/js/site.js"></script>
+<script async src="../../../../_/js/vendor/highlight.js"></script>
+<script src="../../../../_/js/vendor/lunr.js"></script>
+<script src="../../../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../../../.." data-snippet-length="100" data-stylesheet="../../../../_/css/search.css"></script>
+<script async src="../../../../search-index.js"></script>
+<script src="../../../../_/js/vendor/langSelection.js"></script>
+<script async src="../../../../_/js/vendor/tabs.js"></script>
+
+
+<script src="../../../../_/js/CNLanguageSwitcher.js"></script>
+  </body>
+</html>
