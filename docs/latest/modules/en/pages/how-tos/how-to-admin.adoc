@@ -26,15 +26,15 @@ Use the following helm values to configure OpenAI from the Agent helm chart:
 
 [source,yaml]
 ----
-llmModel: "gpt-o4"
-openaiLlmModel: "gpt-o4"
+llmModel: "gpt-4o"
+openaiLlmModel: "gpt-4o"
 openaiApiKey: "xxxxxxxxx"
 ----
 
 Update the chart:
 [source,bash]
 ----
-helm upgrade --install -f values.yaml rancher-ai-agent rancher-ai/agent
+helm upgrade --install --namespace cattle-ai-agent-system --create-namespace -f values.yaml rancher-ai-agent rancher-ai/agent
 ----
 
 === Configure an OpenAI like endpoint
@@ -49,7 +49,7 @@ image:openai-like-end.png[OpenAI like endpoint configuration screen]
 
 [source,bash]
 ----
-helm upgrade --install --set openaiUrl="https://myendpoint.example" rancher-ai-agent rancher-ai/agent
+helm upgrade --install --namespace cattle-ai-agent-system --create-namespace --set openaiUrl="https://myendpoint.example" rancher-ai-agent rancher-ai/agent
 ----
 
 [#gemini]
@@ -81,7 +81,7 @@ googleApiKey: "xxxxxxxxx"
 Update the chart:
 [source,bash]
 ----
-helm upgrade --install -f values.yaml rancher-ai-agent rancher-ai/agent
+helm upgrade --install --namespace cattle-ai-agent-system --create-namespace -f values.yaml rancher-ai-agent rancher-ai/agent
 ----
 
 [#bedrock]
@@ -128,7 +128,7 @@ Update the chart:
 
 [source,bash]
 ----
-helm upgrade --install -f values.yaml rancher-ai-agent rancher-ai/agent
+helm upgrade --install --namespace cattle-ai-agent-system --create-namespace -f values.yaml rancher-ai-agent rancher-ai/agent
 ----
 
 [#rbac]
@@ -212,7 +212,7 @@ Update the chart:
 
 [source,bash]
 ----
-helm upgrade --install -f values.yaml rancher-ai-agent rancher-ai/agent
+helm upgrade --install --namespace cattle-ai-agent-system --create-namespace -f values.yaml rancher-ai-agent rancher-ai/agent
 ----
 
 === Configure RAG via the UI
