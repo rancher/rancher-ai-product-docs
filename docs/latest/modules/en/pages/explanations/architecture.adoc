@@ -1,37 +1,38 @@
 include::partial$variables.adoc[]
 
 = Architecture
-:revdate: 2026-01-23
+:revdate: 2026-02-25
 :page-revdate: {revdate}
-:description: An introduction to the architecture of {project-name}.
+:description: An introduction to the multi-agent architecture of {project-name}.
 
-The system is composed of a UI Extension for user interaction, a ReAct Agent
-for intelligent decision-making, and an MCP Server that acts as the
-intermediary between the agent and the Rancher API.
+The system is designed as a **hierarchical multi-agent ecosystem**. It leverages a central **Supervisor ({short-project-name})** to orchestrate requests across multiple specialized **AI Agents**, each connected to one or more **MCP (Model Context Protocol)** servers.
 
 == Components
 
-=== https://github.com/rancher-sandbox/rancher-ai-agent[ReAct Agent]
+=== https://github.com/rancher/rancher-ai-agent[The Supervisor ({short-project-name})]
 
-The ReAct Agent is the orchestrator of the system’s intelligence. It leverages
-a Large Language Model (LLM) as its reasoning engine, while the agent itself
-provides the structure, coordination, and secure execution of actions.
+{short-project-name} is the entry point of the system and the orchestrator of the user experience. Rather than executing every technical task directly, {short-project-name} acts as an intelligent **Router**.
+
+* Analyzes the user's prompt to determine the required domain (e.g., Security, Provisioning, or Fleet).
+* Consults the `AIAgentConfig` metadata to select the most appropriate specialized Agent for the task.
+* Tracks the user's location in the Rancher UI and ensures relevant cluster, namespace, and resource metadata are passed to the downstream Agents to provide a "context-aware" response.
+
+=== Specialized AI Agents (The "Crew")
+
+The Specialized Agents are the workhorses of the system. Each agent is the orchestrator of its specific domain's intelligence. It leverages a Large Language Model (LLM) as its reasoning engine, while the agent itself provides the structure, coordination, and secure execution of actions.
 
 * **LLM (Reasoning Engine)**:
 ** Interprets user inputs expressed in natural language.
 ** Performs the reasoning: breaks down complex requests into smaller steps.
 ** Decides what should happen next (keep reasoning vs. take action).
 ** Synthesizes outputs from tools into clear, human-readable responses.
-
 * **Agent (Orchestrator)**:
-** Wraps the LLM with the ReAct (Reason + Act).
-** Decides when to let the LLM keep reasoning or when to act on its
-   instructions.
+** Wraps the LLM with the ReAct (Reason + Act) pattern.
+** Decides when to let the LLM keep reasoning or when to act on its instructions.
 ** Calls external tools (via the MCP Server) as directed by the LLM.
-** Ensures secure interactions by passing the user’s Rancher token to the MCP
-   server for authentication and authorization.
+** Ensures secure interactions by passing the user’s Rancher token to the MCP server for authentication and authorization.
 
-=== https://github.com/rancher-sandbox/rancher-ai-mcp[MCP Server]
+=== https://github.com/rancher/rancher-ai-mcp[MCP Server]
 
 The MCP Server acts as a secure, controlled gateway between the ReAct Agent and the Rancher and Kubernetes APIs. Its functions include:
 
@@ -52,69 +53,102 @@ is responsible for:
 * **Displaying Responses**: It receives responses from the ReAct Agent and
   presents them in a chat-like format.
 
-== How It Works (Flow)
+== How It Works (The Flow)
 
-. **User Request -> Agent -> LLM**: The user submits a natural language query
-  through the UI Extension.
-. **LLM Reasoning**: The LLM interprets the request, reasons about the problem,
-  and proposes a plan.
-. **Agent Acting**: If the plan requires external operations, the agent calls
-  the appropriate MCP Server tools.
-. **LLM Response Formulation**: The LLM takes the tool outputs and crafts a
-  coherent, human-readable response.
-. **Response -> User**: The answer is returned to the user through the UI
-  Extension.
+1. **User Request**: The user submits a query through the UI Extension.
+2. **Supervisor Routing**: {short-project-name} identifies the intent and routes the query, along with the UI context, to the specialized Agent (e.g., the Fleet Agent).
+3. **LLM Reasoning**: The specialized Agent’s LLM interprets the request, reasons about the problem, and proposes an action plan.
+4. **Agent Acting**: If the plan requires external operations, the agent calls the appropriate MCP Server tools using the user's secure token.
+5. **Response Formulation**: The LLM takes the tool outputs and crafts a coherent, human-readable response.
+6. **Final Response**: {short-project-name} delivers the Agent's synthesized answer back to the UI.
 
 [mermaid]
 ----
+
 graph TD
 
 subgraph "A. User Interaction"
-User[User / Analyst / DevOps]
+User[User / DevOps]
+UI[UI Extension]
 end
 
-subgraph "B. Rancher AI Assistant (Processing)"
-Agent(Agent)
-LLM(LLM local or online)
-MCPServer(MCP Server)
+subgraph "B. Supervisor Layer"
+Liz{Liz Supervisor}
 end
 
-subgraph "C. Infrastructure"
-Kubernetes(Clusters)
+subgraph "C. Specialized Agents (ReAct)"
+RancherAgent(Rancher Agent)
+FleetAgent(Fleet Agent)
+ProvAgent(Provisioning Agent)
+AppCoAgent(App Collection Agent)
+ObsAgent(Observability Agent)
+SecAgent(Security Agent)
+CustomAgent(Custom Agent)
 end
 
-%% Step 1: User sends intent
-User -- "1. Query " --> Agent
+subgraph "LLM Reasoning Layer (Applicable to all Agents)"
+direction LR
+LocalLLM[Local LLM]
+PublicLLM[Public LLM]
+end
 
-%% Step 2 & 3: Initial Reasoning Loop
-Agent -- "2. Tool Planning Request" --> LLM
-LLM -- "3. Action Plan (e.g., list_pods tool)" --> Agent
+subgraph "D. Infrastructure Gateways"
+MCP1[Rancher MCP]
+MCP2[AppCo MCP]
+MCP_Obs[Observability MCP]
+MCP_Sec[Security MCP]
+MCP4[Third-party MCP]
+end
 
-%% Step 4: Action Execution
-Agent -- "4. Execute Tool via MCP" --> MCPServer
+subgraph "E. Data & APIs"
+RancherAPI[(Rancher / K8s API)]
+AppCoAPI[(AppCo API)]
+MetricsDB[(SUSE Observability / Metrics)]
+VulnDB[(Security / CVE Scans)]
+ExternalAPI[(External System)]
+end
 
-%% Step 5 & 6: Cluster Interaction
-MCPServer -- "5. Secure Action " --> Kubernetes
-Kubernetes -- "6. Raw Results / Status" --> MCPServer
+%% Flow
+User -- "1. Query" --> UI
+UI -- "2. Context + Intent" --> Liz
+Liz -- "3. Routes" --> RancherAgent
+Liz --> FleetAgent
+Liz --> ProvAgent
+Liz --> AppCoAgent
+Liz --> ObsAgent
+Liz --> SecAgent
+Liz --> CustomAgent
 
-%% Step 7: Raw results back to Agent
-MCPServer -- "7. Raw Tool Output" --> Agent
+%% Reasoning Loop Example
+RancherAgent -. "Reasoning Engine" .-> LocalLLM
+RancherAgent -. "Reasoning Engine" .-> PublicLLM
 
-%% Step 8 & 9: Final Interpretation Loop (Crucial step)
-Agent -- "8. Interpret Raw Output" --> LLM
-LLM -- "9. Formatted Final Answer" --> Agent
+%% Reason + Act connections
+RancherAgent -- "4" --> MCP1
+FleetAgent -- "4" --> MCP1
+ProvAgent -- "4" --> MCP1
+AppCoAgent -- "4" --> MCP2
+ObsAgent -- "4" --> MCP_Obs
+SecAgent -- "4" --> MCP_Sec
+CustomAgent -- "4" --> MCP4
 
-%% Step 10: Final Response to User
-Agent -- "10. Final Conversational Response" --> User
+%% API Connections
+MCP1 -- "5" --> RancherAPI
+MCP2 -- "5" --> AppCoAPI
+MCP_Obs -- "5" --> MetricsDB
+MCP_Sec -- "5" --> VulnDB
+MCP4 -- "5" --> ExternalAPI
 
-%% Styles
-style User fill:#e0f2f7,stroke:#1e88e5,stroke-width:2px
-style Agent fill:#d4edda,stroke:#28a745,stroke-width:2px
-style LLM fill:#fff3cd,stroke:#ffc107,stroke-width:2px
-style MCPServer fill:#cce5ff,stroke:#007bff,stroke-width:2px
-style Kubernetes fill:#f8d7da,stroke:#dc3545,stroke-width:2px
-----
-
-An alternative image for the architecture is also shown:
-
-image::arch-alternative.jpg[An alternative image for architecture.]
+%% Style
+style Liz fill:#f9f,stroke:#333,stroke-width:2px
+style LocalLLM fill:#fff3cd,stroke:#ffc107,stroke-dasharray: 5 5
+style PublicLLM fill:#fff3cd,stroke:#ffc107,stroke-dasharray: 5 5
+style Note fill:#fff,stroke:none
+style RancherAgent fill:#d4edda,stroke:#28a745
+style FleetAgent fill:#d4edda,stroke:#28a745
+style ProvAgent fill:#d4edda,stroke:#28a745
+style AppCoAgent fill:#d4edda,stroke:#28a745
+style ObsAgent fill:#d4edda,stroke:#28a745
+style SecAgent fill:#d4edda,stroke:#28a745
+style MCP_Obs fill:#cce5ff,stroke:#007bff
+style MCP_Sec fill:#cce5ff,stroke:#007bff
