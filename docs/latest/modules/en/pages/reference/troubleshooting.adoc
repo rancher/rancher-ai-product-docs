@@ -34,7 +34,7 @@ of the Agent.
 
 [source,bash]
 ----
-helm upgrade --install --set log.level=debug rancher-ai-agent rancher-ai/agent
+helm upgrade -n cattle-ai-agent-system --set log.level=debug rancher-ai-agent rancher-ai/agent
 ----
 
 == Rancher behind insecure certificate
@@ -44,5 +44,5 @@ If your Rancher manager is using a self-signed certificate, please use
 
 [source,bash]
 ----
-helm upgrade --install --set insecureSkipTls=true rancher-ai-agent rancher-ai/agent
+helm upgrade -n cattle-ai-agent-system --set insecureSkipTls=true rancher-ai-agent rancher-ai/agent
 ----

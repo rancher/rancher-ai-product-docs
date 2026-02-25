@@ -1,22 +1,83 @@
 include::partial$variables.adoc[]
 
-= How-tos for Users of {project-name}
-:revdate: 2026-01-23
+= Interacting with Liz (AI Assistant)
+:revdate: 2026-02-24
 :page-revdate: {revdate}
-:description: How-tos for users of {project-name}.
+:description: Learn how to use Liz, the AI assistant in {project-name}, to troubleshoot resources and manage workloads.
 
-[#liz-interaction]
-== Interact with {short-project-name}
+[#getting-started]
+== Getting Started with Liz
 
-The AI Assistant appears as a persistent chat icon. Clicking it opens a side
-panel that maintains the context of your current Rancher view.
+{short-project-name} includes a persistent AI assistant named **Liz**. You can open the assistant at any time by clicking the **Liz icon** image:liz-button.png[Liz button, width=48] in the UI.
 
-[#download-conversation]
-== Download conversation
+When you open the side panel, Liz greets you with suggestions based on your current page context. During a conversation, Liz provides:
 
-You can export the conversation history if needed.
+* **Two suggested actions** to continue the current workflow.
+* **One exploratory action** to learn more about related topics.
 
-[#manually-switch-agent]
-== Manually switch agent
+image::chat-panel.png[Liz chat panel., align="center",  width="50%"]
 
-(Coming later)
+[#context-aware]
+== Context-Awareness
+
+Liz understands exactly what you are looking at. Any resource with a status badge features an **Ask Liz** button.
+
+1.  Click the **Ask Liz sliding button** icon next to a resource. image:ask-liz.png[Ask Liz button, align="center"]
+2.  The side panel will open with a tailored prompt automatically generated for that specific resource.
+3.  Liz automatically gathers the resource name, cluster ID, and namespace to provide accurate help.
+
+image::context.png[Liz context interface showing cluster and namespace awareness., align="center"]
+
+[#user-confirmation]
+== Confirming Actions
+Safety is a priority.
+
+If you ask Liz or one of its specialized Agents to modify your environment (such as updating a deployment or changing a cluster configuration), Liz will present a confirmation prompt. 
+
+image::confirmation.png[Confirmation dialog for environment modifications., width="50%", align="center"]
+
+You must click **Confirm** before any changes are applied to your system.
+
+[#managing-conversations]
+== Managing Conversations
+
+You can maintain multiple threads or save your history for later reference.
+
+* **Create a New Chat:** To start a fresh session, click the **New Chat** icon.
+
+image:conversation.png[New Chat button, width="50%"]
+
+* **Download History:** To save a record of your conversation, click the **Download** icon. This saves a `.txt` file of the transcript to your local drive.
+
+image:download.png[Download button, width="50%"]
+
+[#manual-agent-selection]
+== Switching Agents
+By default, Liz uses "Smart Routing" to send your request to the best specialized agent (e.g., a Security Agent for vulnerabilities). 
+
+If you want to talk to a specific agent manually:
+
+1. Click the **Agent Selection** icon.
+
+image:multi-agent-selection.png[Agent selection button, width="50%"]
+
+2. Choose the desired agent from the list.
+
+NOTE: If Liz notices you frequently using the same agent, it may suggest switching to manual mode for that session.
+
+[#prompt-examples]
+== Example Prompts to Try
+
+Not sure where to start? Try asking Liz these questions:
+
+[cols="1,2,1", options="header"]
+|===
+| Category | User Prompt | Handling Agent
+| **Security** | "Which of my running workloads are affected by vulnerabilities?" | **Security Agent** (fetches CVE and scan data)
+| **Inventory** | "List all registries used across all my clusters." | **Rancher Agent** (queries cluster-wide resources)
+| **Capacity** | "Show me the top 5 pods consuming the most memory." | **Rancher Agent** (queries resource usage data)
+| **Navigation** | "What is the meaning of this status?" | **Context Logic** (interprets resource status from the UI)
+| **Troubleshooting** | "The application is slow; find the root cause." | **SUSE Observability Agent** (analyzes metrics and logs)
+| **Skills up** | "How do I install a helm chart in Rancher?" | **Knowledge ** (provides documentation sources)
+| **Provisioning** | "Analyze the cluster and troubleshoot any problems." | **Rancher-Provisioning Agent** (checks infrastructure health)
+|===
