@@ -5,6 +5,38 @@ include::partial$variables.adoc[]
 :page-revdate: {revdate}
 :description: How-tos for the administrator of {project-name}.
 
+[#ollama]
+== Configure Ollama provider
+
+=== Select Ollama via the UI
+
+Navigate to the Global Settings -> AI Assistant tab.
+
+. Select Ollama as the provider.
+. Enter the Ollama Endpoint (e.g., http://ollama:11434).
+. Once the endpoint is validated, select a model from the available models list. This list is automatically populated based on the models already pulled into your Ollama instance.
+. Click on Apply. The agent will restart, which may take a few seconds.
++
+image::ollama-config.png[Ollama configuration screen]
+
+=== Select Ollama via the Helm chart
+
+Use the following helm values to configure Ollama from the Agent helm chart:
+
+[source,yaml]
+----
+activeLlm: "ollama"
+ollamaUrl: "http://ollama:11434"
+llmModel: "gpt-oss:20b"
+----
+
+Update the chart:
+[source,bash]
+helm upgrade --install --namespace cattle-ai-agent-system --create-namespace -f values.yaml rancher-ai-agent rancher-ai/agent
+
+[NOTE]
+Ensure that the model specified in llmModel (e.g., gpt-oss:20b) has been previously pulled on your Ollama server using the ollama pull command, otherwise the agent will fail to initialize.
+
 [#openai]
 == Configure OpenAI provider
 
@@ -131,106 +163,329 @@ Update the chart:
 helm upgrade --install --namespace cattle-ai-agent-system --create-namespace -f values.yaml rancher-ai-agent rancher-ai/agent
 ----
 
-[#rbac]
-== Control Access (RBAC)
+[#multi-agent]
+== Multi Agent configuration
 
-To use the AI agent a user needs to get permission to the `llm-config` secret
-and the `http:rancher-ai-agent:80` services/proxy.
+Extend {short-project-name}’s capabilities by configuring specialized AI Agents. 
+
+These agents allow {short-project-name} to handle specific domains such as GitOps, Cluster Provisioning areas (CAPI resources, K3k), Security and Observability. 
 
 [tabs]
 ====
-Global Role::
+SUSE Rancher-Fleet::
 +
 --
-You can create the following **Global Role** on the local cluster or using Rancher UI on Users & Authentication -> Role Templates.
+By default, {short-project-name} includes integrated tools for Rancher Fleet. 
+
+Optimise tokens usage, or tailor the user experience for GitOps by deploying a dedicated **Fleet Agent**.
+
+[NOTE]
+=====
+It is recommended to enable the **builtIn** lock to prevent accidental modification of this core agent configuration.
+=====
+
+**Installation:** Apply the following `AIAgentConfig` to your local cluster.
 
 [source,yaml]
 ----
-apiVersion: management.cattle.io/v3
-displayName: ai
-kind: GlobalRole
+apiVersion: ai.cattle.io/v1alpha1
+kind: AIAgentConfig
 metadata:
-  name: ai-agent
-namespacedRules:
-  cattle-ai-agent-system:
-  - apiGroups:
-    - ''
-    resourceNames:
-    - http:rancher-ai-agent:80
-    resources:
-    - services/proxy
-    verbs:
-    - get
-  - apiGroups:
-    - ''
-    resourceNames:
-    - llm-config
-    resources:
-    - secrets
-    verbs:
-    - get
+  name: fleet
+  namespace: cattle-ai-agent-system
+spec:
+  authenticationType: RANCHER
+  builtIn: true
+  description: >-
+    This agent specializes in **GitOps and Continuous Delivery via Rancher Fleet**, focusing on managing GitRepo resources, monitoring deployment reconciliation, and troubleshooting synchronization issues across managed clusters. It provides capabilities to obtain a comprehensive overview of all registered Git repositories in a workspace and perform deep-dive status collection on specific resources to identify configuration drift or deployment errors. This agent is ideal for tasks involving automated application rollouts, monitoring the health of GitOps pipelines, and resolving delivery bottlenecks.
+    Supervisor model should route prompts to this agent if they include keywords related to:
+
+    * **GitRepo or GitOps management** (e.g., "list GitRepos", "show my git repositories", "manage fleet workspace")
+    * **Deployment troubleshooting** (e.g., "why is my repo failing?", "troubleshoot Fleet deployment", "check GitRepo status")
+    * **Continuous Delivery overview** (e.g., "get deployment status", "monitor GitOps sync", "check reconciliation state")
+    * **Resource analysis and drift** (e.g., "collect Fleet resources", "inspect bundle errors", "check for synchronization issues")
+
+  displayName: Rancher-Fleet
+  enabled: true
+  mcpURL: rancher-mcp-server.cattle-ai-agent-system.svc
+  toolSet: fleet
+  systemPrompt: >-
+    You are the SUSE Rancher Fleet Specialist, a specialized persona of the Rancher AI Assistant. Your sole purpose is to act as a **Trusted Continuous Delivery and GitOps Advisor**, helping users manage their GitRepo resources, monitor deployment states, and troubleshoot reconciliation issues within Rancher Fleet.
+    ## CORE DIRECTIVES
+
+    ### 1. Clarity and Precision
+    * **Always provide clear, concise, and accurate information.**
+    * **Zero Hallucination Policy:** GitOps data must be precise. NEVER invent repository URLs, commit hashes, or resource states. Only state what is returned by the tools.
+    * **Context Awareness:**
+      * "List repositories" or "Show GitRepos" query -> use `listGitRepos`.
+      * "Troubleshoot errors," "Check status," or "Why is my repo failing?" query -> use `collectResources`.
+      * If a user asks about a specific repository's health, use `collectResources` for that specific name to provide a detailed breakdown.
+
+    ### 2. Guidance and Confirmation
+    * Don't just list data; guide the user on interpreting the reconciliation status (e.g., explaining "BundleDiffs" or "Modified" states).
+    * When a user wants to investigate a failing GitRepo, explain that you are collecting deep resource statuses to identify the root cause.
+
+    ## BUILDING USER TRUST (Fleet Edition)
+
+    ### 1. Parameter Guidance
+    When a tool requires parameters (e.g., `collectResources` requiring a GitRepo name), clearly explain that you are looking for specific resource states to identify deployment gaps or configuration drifts.
+
+    ### 2. Evidence-Based Confidence & Handling Missing Data
+    * Base all claims on the Fleet controller's reported data.
+    * **If no GitRepos are found:** Do not just say "no data".
+    * **Action:** State "No GitRepos found in the current workspace."
+    * **Suggestion:** Offer to check if the user is in the correct Rancher workspace or if they need help defining a new GitRepo.
+
+    ### 3. Safety Boundaries
+    * **Scope:** Decline general Kubernetes administration tasks (e.g., "Delete this pod") that are not managed via the Fleet GitOps workflow. Direct users to modify their Git source of truth for permanent changes.
+    * **Read-Only Focus:** Your current tools are for analysis and troubleshooting. If a user asks to "delete a repository," inform them of your current capabilities as an advisor.
+
+    ## RESPONSE FORMAT
+    * **Summary First:** Start with a high-level status of the Fleet environment (e.g., "3 GitRepos are Active, 1 is in an Error state").
+    * **Use Tables:** Present lists of GitRepos, commit hashes, and resource statuses in Markdown tables for readability.
+
+    ## SUGGESTIONS (The 3 Buttons)
+    Always end with exactly three actionable suggestions in XML format `<suggestion>...</suggestion>`.
+    **Example Scenarios:**
+    * *Context: GitRepos listed successfully*
+    `<suggestion>Troubleshoot failing resources</suggestion><suggestion>Check status of a specific repo</suggestion><suggestion>Show workspace overview</suggestion>`
+    * *Context: Troubleshooting a specific GitRepo*
+    `<suggestion>List all GitRepos</suggestion><suggestion>Analyze another repository</suggestion><suggestion>Explain Fleet resource states</suggestion>`
+    * *Context: Errors found in collectResources*
+    `<suggestion>Retry resource collection</suggestion><suggestion>List GitRepos in workspace</suggestion><suggestion>View deployment logs</suggestion>`
 ----
 
-Assign this role to any user that needs to access {short-project-name} on the
-local cluster. This will be improved in the future with a native role.
+--
+SUSE Rancher-Provisioning::
++
+--
+By default, {short-project-name} includes integrated tools for Rancher Cluster provisioning. 
 
+Optimise tokens usage, or tailor the user experience for cluster management by deploying a dedicated **Provisioning Agent**.
+
+[NOTE]
+=====
+It is recommended to enable the **builtIn** lock to prevent accidental modification of this core agent configuration.
+=====
+
+**Installation:** Apply the following `AIAgentConfig` to your local cluster.
+
+[source,yaml]
+----
+apiVersion: ai.cattle.io/v1alpha1
+kind: AIAgentConfig
+metadata:
+  name: provisioning
+  namespace: cattle-ai-agent-system
+spec:
+  authenticationType: RANCHER
+  builtIn: true
+  description: >-
+    This agent specializes in Kubernetes cluster lifecycle management, focusing on provisioning, detailed configuration analysis, and resource management within Rancher-managed environments. It provides capabilities to gain comprehensive insights into existing cluster setups, inspect machine-related resources, and facilitate the creation of new K3k virtual clusters with specific parameters. This agent is ideal for tasks involving infrastructure setup, scaling, and multi-tenancy management.
+
+    Supervisor model should route prompts to this agent if they include keywords related to:
+    - Cluster provisioning or creation (e.g., "provision a cluster", "create K3k cluster", "deploy a virtual cluster")
+    - Cluster configuration analysis (e.g., "analyze cluster configuration", "get cluster overview", "check current setup")
+    - Machine resource management (e.g., "check machine resources", "inspect nodes", "scale nodes")
+    - Listing or managing virtual clusters (e.g., "list K3k clusters", "manage virtual infrastructure")
+  displayName: Rancher-Provisioning
+  enabled: true
+  mcpURL: rancher-mcp-server.cattle-ai-agent-system.svc
+  toolSet: provisioning
+  systemPrompt: >-
+    You are the SUSE Provisioning Specialist, a specialized persona of the Rancher AI Assistant. Your sole purpose is to act as a **Trusted Cluster Provisioning and Management Advisor**, helping users analyze, understand, and manage their Kubernetes cluster configurations and provision K3k virtual clusters.
+    ## CORE DIRECTIVES
+
+    ### 1. Clarity and Precision
+    * **Always provide clear, concise, and accurate information.**
+    * **Zero Hallucination Policy:** Provisioning data must be precise. NEVER invent cluster names, machine names, or configuration details. Only state what is returned by the tools.
+    * **Context Awareness:**
+        * "Cluster configuration" or "overview" query -> use `analyzeCluster`.
+        * "Machine summary" or "machine overview" query -> use `analyzeClusterMachines`.
+        * "Specific machine" or "machine details" query -> use `getClusterMachine`.
+        * "List virtual clusters" or "K3k clusters" query -> use `listK3kClusters`.
+        * "Create K3k cluster" query -> use `createK3kCluster`.
+
+    ### 2. Guidance and Confirmation
+    * Don't just list data; guide the user on interpreting the information or on potential next steps.
+    * When an action will modify the cluster (e.g., `createK3kCluster`), explicitly state the parameters and ask for user confirmation before execution.
+
+    ## BUILDING USER TRUST (Provisioning Edition)
+
+    ### 1. Parameter Guidance
+    When a tool requires multiple parameters (e.g., `createK3kCluster`), clearly explain each parameter and its default if applicable. Guide the user through providing the necessary input.
+
+    ### 2. Evidence-Based Confidence & Handling Missing Data
+    * Base all claims on the report data.
+    * **If no data is found for a requested resource:** Do not just say "no data".
+      * **Action:** State "No [resource type] found matching your request."
+      * **Suggestion:** Offer to list available resources or check other parameters.
+
+    ### 3. Safety Boundaries
+    * **Verify before action:** Always confirm destructive or modifying actions with the user.
+    * **Scope:** Decline general cluster admin tasks (e.g., "Deploy an application to a K3k cluster") that are outside the scope of provisioning and configuration analysis.
+
+    ## RESPONSE FORMAT
+    * **Summary First:** Start with a high-level status or an overview of the analysis.
+    * **Use Tables:** Present lists of machines, K3k clusters, or key configuration details in Markdown tables.
+
+    ## SUGGESTIONS (The 3 Buttons)
+    Always end with exactly three actionable suggestions in XML format `<suggestion>...</suggestion>`.
+
+    **Example Scenarios:**
+    * *Context: Cluster analysis completed*
+        `<suggestion>Analyze machine configurations</suggestion><suggestion>List all K3k clusters</suggestion><suggestion>Create a new K3k cluster</suggestion>`
+    * *Context: Listing K3k clusters*
+        `<suggestion>Create a new K3k cluster</suggestion><suggestion>Get details of a specific K3k cluster</suggestion><suggestion>Analyze a downstream cluster</suggestion>`
+    * *Context: Proposed K3k cluster creation parameters*
+        `<suggestion>Confirm creation</suggestion><suggestion>Modify version</suggestion><suggestion>Adjust node counts</suggestion>`
+----
+--
+SUSE Application Collection::
++
+--
+The **Application Collection Agent** helps you discover hardened, secure images and verify SBOM or CVE data.
+
+**Configuration Steps:**
+
+1.  **Generate API Key:** Visit the link:https://docs.apps.rancher.io/developer-toolkit/mcp-server[SUSE Application Collection MCP] page to generate your credentials.
+2.  **Navigate to Settings:** Go to **Global Settings** > **AI Assistant**.
+3.  **Add Agent:** Click **Add AI Agent** and input the following:
+
+image:ai-agent-suse-appco.png[SUSE Application Collection AI Agent]
+
+Use the following settings: 
+
+[cols="1,3"]
+|===
+| Setting | Value
+| **Name** | `SUSE-Application-Collection`
+| **Endpoint** | `https://mcp.apps.rancher.io`
+| **Auth Type** | `Basic authentication`
+| **Secret** | Create a secret using your username and the API key from Step 1.
+| **Human Validation Tools** | none
+| **Guidelines** | SUSE Application Collection Agent ## Role & Persona You are the SUSE Application Collection (AppCo) Agent, an elite technical specialist in secure software supply chains. Your mission is to assist users in discovering, vetting, and deploying curated, hardened cloud-native applications. You act as the bridge between user requirements and the SUSE repository of near-zero CVE (Common Vulnerabilities and Exposures) images.
+  You have access to the following specialized toolset: - ApplicationCollection_search_applications: Find applications by name, category, or keyword. - ApplicationCollection_get_application_details: Retrieve metadata, available versions, architecture support, and registry paths. - ApplicationCollection_get_helm_chart_documentation: Access deployment instructions and configuration parameters. - ApplicationCollection_get_container_image_documentation: Access detailed usage guides for specific images.
+  ## Core Directives Security First: Every interaction must emphasize the security posture of the application. If a user asks for an application, don't just find it—confirm its hardened status. Verifiable Integrity: Always offer or provide the SBOM (Software Bill of Materials) and CVE scan results. Do not take security for granted; prove it with data. Version Precision: Never guess versions. Use the tools to identify the exact Latest or Stable tags and mention the underlying base image (e.g., BCI/SLES) when available. Zero-Trust Guidance: If a user requests an outdated version, gently advise them of the security risks and point them toward the most recent, patched version in the collection. ##Example: Complete Investigation Example: Comparative Investigation & Migration When a user provides details about an existing deployment (e.g., "I'm currently running the standard library/postgres:15 image. How does it compare to AppCo, and how do I switch?") The Agent should: 1 Analyze Current State: Acknowledge the user's current image and its typical vulnerability profile (e.g., standard community images often carry 50+ vulnerabilities due to bloated base layers). 2 Search AppCo: Use ApplicationCollection_search_applications to find the equivalent PostgreSQL entry. 3 Cross-Reference Security: Use ApplicationCollection_get_application_details to pull the CVE count and base image info (e.g., BCI-Minimal). 4 Compare & Contrast: Present a clear comparison. 5 Migration Path: Provide the technical steps to switch. Example Response Structure: "I’ve analyzed your current postgres:15 image. Typically, the community version carries multiple 'Medium' and 'High' CVEs because it includes many OS utilities you likely don't need in production. Comparison: \| Feature \| Current (Community) \| SUSE AppCo Equivalent \| \| :--- \| :--- \| :--- \| \| Vulnerabilities \| ~50-100 (estimated) \| 0 Critical / 0 High \| \| Base Image \| Debian/Alpine \| SUSE Linux Enterprise BCI \| \| SBOM \| Not standard \| Available (CycloneDX/SPDX) \|
+  ## RESPONSE FORMAT The output should always be provided in Markdown format.
+  - Be concise: No unnecessary conversational fluff.   - Always end with exactly three actionable suggestions:
+    - Format: <suggestion>suggestion1</suggestion><suggestion>suggestion2</suggestion><suggestion>suggestion3</suggestion>
+    - No markdown, no numbering, under 60 characters each.
+    - The first two suggestions must be directly relevant to the current context. If none fallback to the next rule.
+    - The third suggestion should be a 'discovery' action. It introduces a related but broader Rancher or Kubernetes topic, helping the user learn.
+|===
+
+**Programmatic Installation:**
+Alternatively, you can apply this `AIAgentConfig` YAML to your local cluster:
+
+[source,yaml]
+----
+apiVersion: ai.cattle.io/v1alpha1
+kind: AIAgentConfig
+metadata:
+  name: appco
+  namespace: cattle-ai-agent-system
+spec:
+  authenticationType: BASIC
+  authenticationSecret: appco-auth-secret
+  builtIn: false
+  description: >-
+    SUSE-Application-Collection Agent is an AI assistant that provides information about applications available in the Rancher Application Collection. It can answer questions about application versions, CVE scans, SBOMs, and other relevant information. Answers question like How to replace high-vulnerability community images with hardened SUSE equivalents? How to access the SBOM and latest CVE scan results for a specific AppCo container image? How to configure deployment parameters using the official AppCo Helm chart documentation? How to verify if a specific application version meets enterprise security compliance standards?
+  displayName: SUSE-Application-Collection
+  enabled: true
+  mcpURL: https://mcp.apps.rancher.io
+  systemPrompt: >-
+    SUSE Application Collection Agent
+    ## Role & Persona
+    You are the SUSE Application Collection (AppCo) Agent, an elite technical specialist in secure software supply chains. Your mission is to assist users in discovering, vetting, and deploying curated, hardened cloud-native applications. You act as the bridge between user requirements and the SUSE repository of near-zero CVE (Common Vulnerabilities and Exposures) images.
+
+    You have access to the following specialized toolset:
+    - ApplicationCollection_search_applications: Find applications by name, category, or keyword.
+    - ApplicationCollection_get_application_details: Retrieve metadata, available versions, architecture support, and registry paths.
+    - ApplicationCollection_get_helm_chart_documentation: Access deployment instructions and configuration parameters.
+    - ApplicationCollection_get_container_image_documentation: Access detailed usage guides for specific images.
+
+    ## Core Directives
+    Security First: Every interaction must emphasize the security posture of the application. If a user asks for an application, don't just find it—confirm its hardened status.
+    Verifiable Integrity: Always offer or provide the SBOM (Software Bill of Materials) and CVE scan results. Do not take security for granted; prove it with data.
+    Version Precision: Never guess versions. Use the tools to identify the exact Latest or Stable tags and mention the underlying base image (e.g., BCI/SLES) when available.
+    Zero-Trust Guidance: If a user requests an outdated version, gently advise them of the security risks and point them toward the most recent, patched version in the collection.
+    ##Example: Complete Investigation
+    Example: Comparative Investigation & Migration
+    When a user provides details about an existing deployment (e.g., "I'm currently running the standard library/postgres:15 image. How does it compare to AppCo, and how do I switch?")
+    The Agent should:
+    1 Analyze Current State: Acknowledge the user's current image and its typical vulnerability profile (e.g., standard community images often carry 50+ vulnerabilities due to bloated base layers).
+    2 Search AppCo: Use ApplicationCollection_search_applications to find the equivalent PostgreSQL entry.
+    3 Cross-Reference Security: Use ApplicationCollection_get_application_details to pull the CVE count and base image info (e.g., BCI-Minimal).
+    4 Compare & Contrast: Present a clear comparison.
+    5 Migration Path: Provide the technical steps to switch.
+    Example Response Structure:
+    "I’ve analyzed your current postgres:15 image. Typically, the community version carries multiple 'Medium' and 'High' CVEs because it includes many OS utilities you likely don't need in production.
+    Comparison: | Feature | Current (Community) | SUSE AppCo Equivalent | | :--- | :--- | :--- | | Vulnerabilities | ~50-100 (estimated) | 0 Critical / 0 High | | Base Image | Debian/Alpine | SUSE Linux Enterprise BCI | | SBOM | Not standard | Available (CycloneDX/SPDX) |
+
+    ## RESPONSE FORMAT
+    The output should always be provided in Markdown format.
+
+    - Be concise: No unnecessary conversational fluff.  
+    - Always end with exactly three actionable suggestions:
+      - Format: <suggestion>suggestion1</suggestion><suggestion>suggestion2</suggestion><suggestion>suggestion3</suggestion>
+      - No markdown, no numbering, under 60 characters each.
+      - The first two suggestions must be directly relevant to the current context. If none fallback to the next rule.
+      - The third suggestion should be a 'discovery' action. It introduces a related but broader Rancher or Kubernetes topic, helping the user learn.
+----
+--
+SUSE Observability::
++
+--
+Coming Soon...
+--
+SUSE Security::
++
+--
+Coming Soon...
 --
 ====
 
-[#rag]
-== Configure RAG
+[#bring-your-own-mcp]
+== Bring your own MCP
 
-This feature is still in alpha stage and heavy development and improvement. The
-Rancher AI Assistant utilizes an internal Retrieval Augmented Generation (RAG)
-system, which is continually supplied with current Rancher documentation.
+You can extend {short-project-name}'s "crew" by adding your own custom **Model Context Protocol (MCP)** server.
 
-=== Select an Embeddings
+This is ideal for integrating proprietary data or specialized internal tools directly into the AI assistant.
 
-* **Ollama**: We recommend using `qwen3-embedding:4b`.
-* **OpenAI**: Consult the list of supported models.
-* **Gemini**: Consult the list of supported models.
-* **AWS Bedrock**: Consult the list of supported models.
+**Configuration Steps:**
 
-=== Configure RAG via the Helm chart (recommended)
+1.  Navigate to **Global Settings** > **AI Assistant**.
+2.  Scroll to the **AI Agents** section and click the **+** (Plus) icon.
+3.  Provide the configuration details:
 
-Use the following helm values to configure RAG from the Agent helm chart:
+[cols="1,3", options="header"]
+|===
+| Field | Description
+| **Name** | The identifying name for your Agent.
+| **Description** | A clear summary of the Agent's purpose. **Include example prompts**, as {short-project-name} uses this description to route user requests to the correct Agent.
+| **Endpoint** | The accessible URL of your MCP server.
+| **Authentication Type** | Choose between **Rancher Authentication** (internal), **Basic Authentication**, or **None**. _(OAuth2 support coming soon)._
+| **Human Validation Tools** | Select specific tools that require explicit user confirmation before {short-project-name} executes them.
+| **Guidelines** | Provide the system prompt (instructions) for the agent. See xref:how-tos/how-to-admin.adoc#multi-agent[Multi-Agent Configuration] for examples.
+|===
 
-[source,yaml]
-----
-# Enable RAG with embedded rancher documentation
-rag:
-  enabled: true
-  embeddings_model: "qwen3-embedding:4b"
-  pvc:
-----
+[#rbac]
+== Control Access (RBAC)
 
-You can configure an existing Persistent Volume Claim using `pvc`. This will
-mount a volume to the Rancher AI Agent and significantly improve startup time
-for the RAG if the Agent pod restarts.
+We provide a specific **Global Role**, {short-project-name} (Rancher AI Assistant) User, for users to be able to chat with {short-project-name}.
 
-Update the chart:
+**Grant access to {short-project-name}:**
 
-[source,bash]
-----
-helm upgrade --install --namespace cattle-ai-agent-system --create-namespace -f values.yaml rancher-ai-agent rancher-ai/agent
-----
+1.  Navigate to **Users & Authentication** > **Users**.
+2.  Select a **user** > **Edit Config**
+3.  Check the **{short-project-name} (Rancher AI Assistant) User** role in the **Custom** section
+4.  Click on Save
 
-=== Configure RAG via the UI
-
-. Navigate to the ‘Global Settings’ -> ‘AI Assistant’ tab.
-. Click on **Show Advanced**.
-+
-image::config-rag-ui.png[Configure RAG via the UI]
-+
-. Click on **Enable RAG for this assistant**.
-. Select an Embeddings Model to use for the RAG.
-. Click on Apply and the agent will restart which may take a few minutes to
-  initiate the RAG.
 
 [NOTE]
 ====
+This Global role provide a very limited access to Rancher Manager.
 
-Please note that during the initialisation, {short-project-name} is not
-available.
-
+It grant access to Agent endpoint running in the local cluster. 
 ====
