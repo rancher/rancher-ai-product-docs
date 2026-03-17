@@ -32,48 +32,42 @@ you choose to deploy.
 
 ====
 
-[cols="1,1,1", options="header"]
+[cols="1,1,1,1", options="header"]
 |===
-| LLM Model | Requirements | GPU Requirement
+| LLM Model | Requirements | GPU required? | GPU Requirement
 
 | https://ollama.com/library/gpt-oss[gpt-oss:20b]
 | Ollama installed
+|
 | NVIDIA RTX A5000, NVIDIA RTX 4090 or similar (Minimum 24Gb VRAM)
 
+| https://ollama.com/library/qwen3-embedding[qwen3-embedding:4b]
+| Ollama installed
+|
+| NVIDIA RTX A5000, NVIDIA RTX 4090 or similar (Minimum 24Gb VRAM)
 
 | https://ollama.com/library/gpt-oss[gpt-oss:120b]
 | Ollama installed
+|
 | NVIDIA A100 or similar (Minimum 80Gb VRAM)
 
 | Gemini
 | Google Workplace Account
+|
 | N/A
 
 | ChatGPT
 | OpenAI account
-| N/A
-
-| AWS Bedrock
-| AWS account
-| N/A
-
-| OpenAI Like provider
-| Azure Account, Evroc Think, ...
+|
 | N/A
 |===
-
-[IMPORTANT]
-====
-
-The list of tested models is available in the xref:/explanations/models.adoc[Models] documentation.
-
-====
 
 [IMPORTANT]
 ====
 
 If you run your own Ollama, please make sure to have at least `gpt-oss:20b` for
-the local model. Consult https://ollama.com/library[Ollama documentation] on how to pull models.
+the local model and `qwen3-embedding:4b` for the embeddings model with RAG
+enabled. Consult Ollama documentation on how to pull models.
 
 ====
 
@@ -100,7 +94,7 @@ Create a `values.yaml` file setting (for Ollama):
 +
 [source,yaml]
 ----
-ollamaLlmModel: "gpt-oss:20b"
+llmModel: "gpt-oss:20b"
 ollamaUrl: "http://ollama:11434"
 activeLlm: "ollama"
 ----
@@ -129,15 +123,25 @@ Open the Rancher Manager UI and navigate to the 'Extensions' page.
 +
 image::menubar-extension.png[Extension button in menu bar]
 +
-. Use the three-dot menu in the upper right and select 'Add Rancher Repositories'.
+. Use the three-dot menu in the upper right and select 'Manage Repositories'.
 +
-image::rancher-repositories.png[Menu to manage Rancher Repositories]
+image::menu-manage-repo.png[Menu to manage repositories]
 +
-. Select  'Add Official Rancher Extensions Repository' to add the repository.
+. Click 'Create' to add the repository.
+. Configure the repository:
+   * **name**: `ai-assistant-ui`
+   * **target**: Git repository containing Helm chart or cluster template
+     definitions
+   * **index URL**: `https://github.com/rancher/rancher-ai-ui`
+   * **Git Branch**: `gh-pages`
 +
-image::add-extensions-repositories.png[Add Official Rancher Repository]
+image::config-repo-branch.png[Repository create, using the gh-branch]
 +
-. Click  'Add'.
+. Click 'Create'.
+. Wait for the `ai-assistant-ui` repository status to be Active.
+. Go back to the 'Extensions' page and select the 'Available' tab.
++
+image::config-repo-available.png[Configure the available repository.]
 +
 . Find the AI Assistant card and click 'Install'.
 . Select a version (or use the latest by default) and click 'Install'.
