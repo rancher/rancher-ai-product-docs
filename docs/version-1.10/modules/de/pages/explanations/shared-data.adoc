@@ -1,0 +1,55 @@
+include::partial$variables.adoc[]
+
+= Geteilte Daten und Kontext
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: Wie {project-name} Kontext und sichere Datensammlung von Rancher und Downstream-Clustern verwaltet.
+
+Um genaue und kontextbewusste Antworten zu liefern, teilt das System spezifische Metadaten zwischen der Benutzeroberfläche, dem Supervisor und dem spezialisierten Agenten-MCP-Server mit dem konfigurierten LLM-Anbieter.
+
+== UI-Kontext
+
+Wenn ein Benutzer mit der Chat-Oberfläche interagiert, erfasst das System automatisch den aktuellen UI-Kontext und teilt ihn. Dies stellt sicher, dass der KI-Agent den Fokus des Benutzers versteht, ohne dass eine explizite Erwähnung von Ressourcen erforderlich ist.
+
+Der geteilte Kontext umfasst:
+
+* **Cluster-ID**: Der aktuelle Cluster, der im Rancher-Dashboard angezeigt wird.
+* **Namespace**: Der spezifische Namespace-Kontext, falls zutreffend.
+* **Ressourcenmetadaten**: Details über die aktuelle Ressource (zum Beispiel eine spezifische Implementierung, ein Node oder Fleet Bundle), die in der Benutzeroberfläche angezeigt wird.
+
+Diese Daten werden mit der Eingabe des Benutzers vom **Supervisor** gebündelt und an den entsprechenden spezialisierten Agenten weitergeleitet und mit dem LLM-Anbieter geteilt.
+
+== Datensammlung über MCP-Tools
+
+Der Rancher-Agent verwendet spezialisierte Tools, die über den link:https://github.com/rancher/rancher-ai-mcp?tab=readme-ov-file#available-tools[Rancher MCP-Server] bereitgestellt werden, um Echtzeitdaten aus der Umgebung abzurufen. Diese Tools fungieren als Brücke zwischen dem Denken der KI und dem tatsächlichen Zustand Ihrer Infrastruktur.
+
+Die folgende Liste von Aktionen definiert die gesammelten Daten vom Rancher-Manager und Downstream-Clustern:
+
+[cols="1,2", options="header"]
+|===
+| Aktionskategorie | Spezifische Aktionen
+
+| **Kubernetes-Ressourcen**
+| `getKubernetesResource`, `listKubernetesResources`, `getDeployment`
+
+| **Cluster-Analyse**
+| `analyzeCluster`, `analyzeClusterMachines`, `getNodes`, `getProject`
+
+| **Continuous Delivery & GitOps**
+| `listGitRepos`, `getGitRepo`, `analyzeFleetResources`
+|===
+
+Diese Aktionen holen Daten aus der Umgebung und teilen das Ergebnis mit dem LLM. 
+**Empfindliche Daten**, die durch diese Aufrufe abgerufen werden, können Folgendes umfassen:
+
+* Geheimnisse und API-Schlüssel
+* Benutzernamen und Gruppen
+* IP-Adressen und Netzwerkkonfigurationen
+
+== Bearbeitung vertraulicher Informationen
+
+Daten, die aus Downstream-Clustern abgerufen werden, insbesondere Pod-Protokolle und Ressourcendefinitionen, können sensible Informationen enthalten. Das System verwaltet dieses Risiko durch ein "secure-by-design"-Datenfreigabemodell:
+
+* Der Agent verwendet niemals ein "Root"- oder "Service"-Konto. Er führt jede Datensammlungsaufgabe mit den **Rechten des Benutzers** aus. Dies stellt sicher, dass der Agent nur Daten "sehen" und "teilen" kann, auf die der Benutzer bereits über Rancher RBAC autorisiert ist.
+* Daten werden auf Abruf abgerufen. Das System unterhält keine sekundäre Datenbank der sensiblen Inhalte Ihres Clusters; es fragt die Rancher- und Kubernetes-APIs nur ab, wenn ein spezifischer Toolaufruf durch die Denkschleife des Agents ausgelöst wird.

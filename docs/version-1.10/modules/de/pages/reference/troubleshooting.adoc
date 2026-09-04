@@ -1,0 +1,85 @@
+include::partial$variables.adoc[]
+
+= Fehlerbehebung
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: Schritte zur Fehlerbehebung für {project-name}.
+
+== Schnelle Fehlersuche
+
+Der KI-Assistent befindet sich im lokalen Cluster im `cattle-ai-agent-system`
+Namespace. Agentenprotokolle können aufgerufen werden, um Probleme zu verstehen.
+
+[source,bash]
+----
+kubectl get po -n cattle-ai-agent-system
+----
+
+Um Protokolle vom ‚rancher-ai-agent‘ Pod zu erhalten:
+[source,bash]
+----
+kubectl logs -n cattle-ai-agent-system -l app=rancher-ai-agent
+----
+
+Um Protokolle vom ‚rancher-ai-mcp‘ Pod zu erhalten:
+[source,bash]
+----
+kubectl logs -n cattle-ai-agent-system -l app=rancher-mcp-server
+----
+
+== Debuggen-Protokoll aktivieren
+
+Sie können das Debuggen-Protokoll aktivieren, indem Sie `log.level=debug` während der Helm-Implementierung des Agenten verwenden.
+
+[NOTE]
+====
+Wenn Sie das Modell über die Einstellungsseite konfiguriert haben, melden Sie bitte die Einstellungen in der Werte-Datei zurück, bevor Sie aktualisieren.
+====
+
+Aktualisieren Sie die values.yaml
+[source,yaml]
+----
+...
+log:
+  level: debug
+...
+----
+
+Aktualisieren Sie das Chart:
+[source,bash,subs="attributes+"]
+----
+helm upgrade -n cattle-ai-agent-system -f values.yaml rancher-ai-agent {oci-reg}
+----
+
+== Rancher hinter unsicherem Zertifikat
+
+Wenn Ihr Rancher-Manager ein selbstsigniertes Zertifikat verwendet, verwenden Sie bitte `insecureSkipTls=true`, um dem MCP-Server zu erlauben, sich mit Rancher zu verbinden.
+
+[NOTE]
+====
+Wenn Sie das Modell über die Einstellungsseite konfiguriert haben, melden Sie bitte die Einstellungen in der Werte-Datei zurück, bevor Sie aktualisieren.
+====
+
+[WARNING]
+====
+Wenn das Chart bereits bereitgestellt wurde. Sie müssen die Implementierung des rancher-mcp-servers löschen, bevor Sie das Chart aktualisieren.
+[source,bash,subs="attributes+"]
+----
+kubectl delete deployments.apps -n cattle-ai-agent-system rancher-mcp-server
+----
+====
+
+Aktualisieren Sie die values.yaml
+[source,yaml]
+----
+...
+insecureSkipTls: true
+...
+----
+
+Aktualisieren Sie das Chart:
+[source,bash,subs="attributes+"]
+----
+helm upgrade -n cattle-ai-agent-system -f values.yaml rancher-ai-agent {oci-reg}
+----

@@ -1,0 +1,35 @@
+include::partial$variables.adoc[]
+
+= {project-name} v1.1.0 Release Highlights
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+
+== New Features
+
+* **OAuth2 authentication for MCP and agent connections**: {short-project-name} and its agents can now authenticate to external MCP servers using OAuth2, following the Model Context Protocol authorization specification. (link:https://github.com/rancher/rancher-ai-ui/issues/191[#191], link:https://github.com/rancher/rancher-ai-agent/issues/10[#10])
+* **Custom headers authentication for MCP connections**: MCP server configurations now support custom header-based authentication secrets, enabling integrations such as the SUSE Observability MCP server. (link:https://github.com/rancher/rancher-ai-ui/issues/188[#188], link:https://github.com/rancher/rancher-ai-agent/issues/182[#182])
+* **Per-agent model configuration**: Each agent can now be configured with its own model, allowing cheaper models for simple questions and larger models for complex operations. (link:https://github.com/rancher/rancher-ai-agent/issues/170[#170])
+* **Global HTTP_PROXY support**: Added support for configuring `HTTP_PROXY` globally across the LLM provider, the Rancher MCP server, and calls to external MCP servers. (link:https://github.com/rancher/rancher-ai-agent/issues/208[#208])
+* **Custom AWS Bedrock endpoint URL**: The AWS Bedrock endpoint is no longer hard-coded, allowing environments without direct internet access to use AWS PrivateLink. (link:https://github.com/rancher/rancher-ai-agent/issues/206[#206])
+* **New "Generic" provider tile**: A new Generic provider tile simplifies configuring OpenAI-compatible endpoints, replacing the previous advanced-settings flow. (link:https://github.com/rancher/rancher-ai-ui/issues/187[#187])
+* **SUSE Virtualization related resources support**: "Related Resources" links now correctly resolve SUSE Virtualization (Harvester) resources such as virtual machines. (link:https://github.com/rancher/rancher-ai-ui/issues/241[#241])
+* **Fleet renamed to Continuous Delivery**: References to Fleet throughout the UI, including agent mode selection, have been renamed to Continuous Delivery. (link:https://github.com/rancher/rancher-ai-ui/issues/245[#245])
+* **Sub-agent architecture**: Introduced a sub-agent architecture that improves agent handoff and enables cross-agent MCP tool calls for complex, multi-step prompts. (link:https://github.com/rancher/rancher-ai-agent/issues/169[#169], link:https://github.com/rancher/rancher-ai-ui/issues/207[#207])
+
+== Core Improvements
+
+* **Fleet/Continuous Delivery MCP tooling**: Added a `getHelmOp` tool so agents can inspect Continuous Delivery Helm operations directly. (link:https://github.com/rancher/rancher-ai-mcp/issues/51[#51])
+* **More consistent MCP tool schemas**: Standardized tool field definitions across MCP tools to use `InputSchema`, improving reliability of tool calls. (link:https://github.com/rancher/rancher-ai-mcp/issues/48[#48])
+* **Better resource filtering**: Identified and implemented a filtering approach for the `listKubernetesResources` tool, improving results for large clusters. (link:https://github.com/rancher/rancher-ai-mcp/issues/44[#44])
+
+== Bug Fixes & Security
+
+* Fixed an issue where chats could not be stored when using a custom CA with `insecureSkipTls=false`. (link:https://github.com/rancher/rancher-ai-agent/issues/326[#326])
+* Fixed an agent deadlock caused by multiple pending interrupts requiring an explicit interrupt ID when resuming. (link:https://github.com/rancher/rancher-ai-agent/issues/318[#318])
+* Fixed permanent reconciliation failures on `AIAgentConfig` caused by transient MCP server unavailability. (link:https://github.com/rancher/rancher-ai-agent/issues/205[#205])
+* Updated the Gemini API model selection list, removing deprecated and preview models. (link:https://github.com/rancher/rancher-ai-ui/issues/265[#265])
+* Fixed sliding badges breaking table layouts in the UI. (link:https://github.com/rancher/rancher-ai-ui/issues/122[#122])
+
+NOTE: This page highlights the most significant changes in this release and is not an exhaustive changelog.
+
+Full Changelogs: link:https://github.com/rancher/rancher-ai-agent[rancher-ai-agent] | link:https://github.com/rancher/rancher-ai-ui[rancher-ai-ui] | link:https://github.com/rancher/rancher-ai-mcp[rancher-ai-mcp]

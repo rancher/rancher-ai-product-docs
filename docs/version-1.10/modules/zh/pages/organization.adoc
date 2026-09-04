@@ -1,0 +1,6 @@
+include::partial$variables.adoc[]
+= 文档组织
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: 文档 {project-name} 是如何组织的？

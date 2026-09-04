@@ -1,7 +1,0 @@
-include::partial$variables.adoc[]
-
-= {project-name}-Anwendungsfälle
-:page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 2026-01-23
-:page-revdate: {revdate}
-:description: Eine Beschreibung bestimmter Anwendungsfälle für {project-name}.

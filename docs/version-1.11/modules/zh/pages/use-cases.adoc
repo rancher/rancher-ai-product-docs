@@ -1,0 +1,7 @@
+include::partial$variables.adoc[]
+
+= {project-name} 使用案例
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: 关于{project-name}的某些使用案例的描述。

@@ -1,0 +1,84 @@
+include::partial$variables.adoc[]
+
+= Solución de problemas
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: Pasos de solución de problemas para {project-name}.
+
+== Solución de problemas rápida
+
+El Asistente de IA vive en el clúster local en el `cattle-ai-agent-system`espacio de nombres. Se pueden acceder a los Registros del Agente para entender cualquier problema.
+
+[source,bash]
+----
+kubectl get po -n cattle-ai-agent-system
+----
+
+Para obtener registros del pod ‘rancher-ai-agent’:
+[source,bash]
+----
+kubectl logs -n cattle-ai-agent-system -l app=rancher-ai-agent
+----
+
+Para obtener registros del pod ‘rancher-ai-mcp’:
+[source,bash]
+----
+kubectl logs -n cattle-ai-agent-system -l app=rancher-mcp-server
+----
+
+== Habilitar registro de borrado
+
+Puedes habilitar el registro de borrado, utilizando `log.level=debug` durante la ampliación de helm del Agente.
+
+[NOTE]
+====
+Si configuraste el modelo a través de la página de configuración, por favor informa la configuración de nuevo en el archivo de valores antes de actualizar.
+====
+
+Actualizar el values.yaml
+[source,yaml]
+----
+...
+log:
+  level: debug
+...
+----
+
+Actualizar el gráfico:
+[source,bash,subs="attributes+"]
+----
+helm upgrade -n cattle-ai-agent-system -f values.yaml rancher-ai-agent {oci-reg}
+----
+
+== Rancher detrás de un certificado inseguro
+
+Si tu gestor de Rancher está utilizando un certificado autofirmado, por favor utiliza `insecureSkipTls=true` para permitir que el servidor MCP se conecte a Rancher.
+
+[NOTE]
+====
+Si configuraste el modelo a través de la página de configuración, por favor informa la configuración de nuevo en el archivo de valores antes de actualizar.
+====
+
+[WARNING]
+====
+Si el gráfico ya fue ampliado. Necesitas eliminar la ampliación del rancher-mcp-server antes de actualizar el gráfico.
+[source,bash,subs="attributes+"]
+----
+kubectl delete deployments.apps -n cattle-ai-agent-system rancher-mcp-server
+----
+====
+
+Actualizar el values.yaml
+[source,yaml]
+----
+...
+insecureSkipTls: true
+...
+----
+
+Actualizar el gráfico:
+[source,bash,subs="attributes+"]
+----
+helm upgrade -n cattle-ai-agent-system -f values.yaml rancher-ai-agent {oci-reg}
+----

@@ -1,0 +1,132 @@
+include::partial$variables.adoc[]
+
+= Inicio rápido
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: Comenzando con {project-name}, instalando la pila {project-name} y ocupándote de los requisitos previos y la autenticación.
+
+Este inicio rápido explica cómo usar Ollama para proporcionar capacidades de LLM a {short-project-name}. Puedes cambiar de proveedores tras la instalación inicial consultando las xref:/how-tos/how-to-admin.adoc[instrucciones para administradores].
+
+== Requisitos previos
+
+La versión actual del Asistente de IA requiere los siguientes componentes:
+
+* https://helm.sh/docs/[Helm instalado]
+* Rancher Prime/Community Manager 2.13 o superior
+
+Asegúrate de tener los derechos para desplegar CRD (cluster_admin) en el clúster anfitrión.
+
+== Requisitos Técnicos
+
+Aquí tienes una tabla de los componentes de IA soportados y sus requisitos.
+
+[NOTE]
+====
+
+Solo necesitas cumplir con los requisitos de los componentes específicos que pretendes ejecutar. Los requisitos variarán según el modelo extenso de lenguaje (LLM) específico que elijas desplegar.
+
+====
+
+[cols="1,1,1", options="header"]
+|===
+| Modelo LLM | Requisitos | Requisito de GPU
+
+| https://ollama.com/library/gpt-oss[gpt-oss:20b]
+| Ollama instalado
+| NVIDIA RTX A5000, NVIDIA RTX 4090 o similar (Mínimo 24Gb VRAM)
+
+
+| https://ollama.com/library/gpt-oss[gpt-oss:120b]
+| Ollama instalado
+| NVIDIA A100 o similar (Mínimo 80Gb VRAM)
+
+| Gemini
+| Cuenta de Google Workplace
+| N/D
+
+| ChatGPT
+| Cuenta de OpenAI
+| N/D
+
+| AWS Bedrock
+| Cuenta de AWS
+| N/D
+
+| Proveedor similar a OpenAI
+| Cuenta de Azure, Evroc Think, ...
+| N/D
+|===
+
+[IMPORTANT]
+====
+
+La lista de modelos probados está disponible en la documentación de xref:/explanations/models.adoc[Modelos].
+
+====
+
+[IMPORTANT]
+====
+
+Si ejecutas tu propio Ollama, asegúrate de tener al menos `gpt-oss:20b` para el modelo local. Consulta https://ollama.com/library[la documentación de Ollama] sobre cómo obtener modelos.
+
+====
+
+== Instalar {project-name}
+
+La instalación de {short-project-name} es un proceso de dos pasos:
+
+* Despliega el agente y el MCP a través del gráfico de Helm proporcionado.
+* Despliega la extensión de la interfaz de usuario de Rancher.
+
+=== Instala el Agente y el MCP en el clúster local
+
+. Crea un archivo de configuración `values.yaml` (para Ollama):
++
+[source,yaml]
+----
+ollamaLlmModel: "gpt-oss:20b"
+ollamaUrl: "http://ollama:11434"
+activeLlm: "ollama"
+----
++
+[NOTE]
+====
+
+Puedes cambiar más tarde esos ajustes y proveedores en las pestañas de “Ajustes Globales -> Asistente de IA” de Rancher
+
+====
+. Instala el gráfico rancher-ai-agent
++
+[source,bash,subs="attributes+"]
+----
+helm install rancher-ai-agent \
+  --namespace cattle-ai-agent-system \
+  --create-namespace \
+  -f values.yaml {oci-reg}
+----
+
+=== Instala la extensión de la interfaz de usuario
+
+Abre la interfaz de usuario de Rancher Manager y navega a la página de 'Extensiones'.
+
+. En Rancher Manager, haz clic en Extensión en la barra de menú.
++
+image::menubar-extension.png[Botón de extensión en la barra de menú]
++
+. Utiliza el menú de tres puntos en la parte superior derecha y selecciona 'Añadir Repositorios de Rancher'.
++
+image::rancher-repositories.png[Menú para gestionar Repositorios de Rancher]
++
+. Selecciona 'Añadir Repositorio Oficial de Extensiones de Rancher' para añadir el repositorio.
++
+image::add-extensions-repositories.png[Añadir Repositorio Oficial de Rancher]
++
+. Haz clic en 'Añadir'.
++
+. Encuentra la tarjeta del Asistente de IA y haz clic en 'Instalar'.
+. Selecciona una versión (o utiliza la última por defecto) y haz clic en «Instalar».
++
+image::config-repo-install.png[Selecciona una versión o utiliza la última.]
++
+. Una vez que la extensión haya terminado de instalarse, haz clic en el botón «Recargar» que aparece en la parte superior de la página.

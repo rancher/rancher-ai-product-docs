@@ -1,0 +1,11 @@
+include::partial$variables.adoc[]
+
+= エンタープライズレベルのサポート
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: {project-name}のためのエンタープライズサポート
+
+ifeval::["{build-type}" == "product"]
+SUSEはのために完全なエンタープライズレベルのサポートを提供します。{project-name}
+endif::[]

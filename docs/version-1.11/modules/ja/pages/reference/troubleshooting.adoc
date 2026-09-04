@@ -1,0 +1,84 @@
+include::partial$variables.adoc[]
+
+= トラブルシューティング
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: {project-name}のトラブルシューティング手順。
+
+== クイックトラブルシューティング
+
+AIアシスタントは、`cattle-ai-agent-system`ネームスペース内のローカルクラスタに存在します。エージェントログにアクセスして、問題を理解できます。
+
+[source,bash]
+----
+kubectl get po -n cattle-ai-agent-system
+----
+
+‘rancher-ai-agent’ポッドからログを取得するには：
+[source,bash]
+----
+kubectl logs -n cattle-ai-agent-system -l app=rancher-ai-agent
+----
+
+‘rancher-ai-mcp’ポッドからログを取得するには：
+[source,bash]
+----
+kubectl logs -n cattle-ai-agent-system -l app=rancher-mcp-server
+----
+
+== デバッグログを有効にする
+
+エージェントのヘルムデプロイメント中に`log.level=debug`を使用してデバッグログを有効にできます。
+
+[NOTE]
+====
+設定ページを介してモデルを構成した場合は、更新する前に値ファイルに設定を報告してください。
+====
+
+values.yamlを更新する
+[source,yaml]
+----
+...
+log:
+  level: debug
+...
+----
+
+チャートを更新する：
+[source,bash,subs="attributes+"]
+----
+helm upgrade -n cattle-ai-agent-system -f values.yaml rancher-ai-agent {oci-reg}
+----
+
+== 安全でない証明書の背後にあるRancher
+
+Rancherマネージャーが自己署名証明書を使用している場合は、MCPサーバーがRancherに接続できるように`insecureSkipTls=true`を使用してください。
+
+[NOTE]
+====
+設定ページを介してモデルを構成した場合は、更新する前に値ファイルに設定を報告してください。
+====
+
+[WARNING]
+====
+チャートがすでにデプロイ済みの場合。チャートをアップグレードする前に、rancher-mcp-serverデプロイメントを削除する必要があります。
+[source,bash,subs="attributes+"]
+----
+kubectl delete deployments.apps -n cattle-ai-agent-system rancher-mcp-server
+----
+====
+
+values.yamlを更新する
+[source,yaml]
+----
+...
+insecureSkipTls: true
+...
+----
+
+チャートを更新する：
+[source,bash,subs="attributes+"]
+----
+helm upgrade -n cattle-ai-agent-system -f values.yaml rancher-ai-agent {oci-reg}
+----

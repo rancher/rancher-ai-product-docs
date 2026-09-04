@@ -1,13 +1,13 @@
 ---
 site:
   title: 'Liz: The Rancher AI Assistant'
-  start_page: latest@rancher-ai:en:introduction.adoc
+  start_page: 1.10@rancher-ai:en:introduction.adoc
 
 content:
   sources:
     - url: https://github.com/rancher/rancher-ai-product-docs.git
       branches: [main]
-      start_paths: [shared, docs/latest]
+      start_paths: [shared, docs/version-*]
 
 ui:
   bundle:

@@ -1,0 +1,48 @@
+include::partial$variables.adoc[]
+
+= 见{project-name}
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: 介绍{project-name}，这是一个SUSE® Rancher Prime产品。
+
+{short-project-name}是一个上下文感知的AI代理，集成在SUSE Rancher Prime环境中。与通用AI不同，{short-project-name}旨在理解您的集群、名称空间和工作负载的实时状态。
+
+作为一个扩展，{short-project-name}驻留在您的工作区内，提供您所需的实时指导。无论您是在调查故障的部署，还是试图理解新的Kubernetes概念，{short-project-name}使用模型上下文协议（MCP）来弥合您的操作数据与可操作见解之间的差距。
+
+无论您需要网站可靠性工程（SRE）的意见，还是需要Rancher专家的帮助，{short-project-name}都能为您提供见解，帮助您更快做出正确的决策。{short-project-name}的力量在于其与Rancher UI的集成，以及其适应企业安全要求的能力。
+
+== 关键组件
+
+* **AI代理**:LLM推理引擎与Rancher MCP服务器之间的领域专用桥梁。
+  它将复杂请求分解并路由到安全工具调用，同时执行保护措施。
+  它确保上下文感知的执行，并将技术数据合成成清晰、易于理解的响应。
+* **Rancher MCP**:Rancher模型上下文协议（MCP）是负责与Rancher API交互的组件。它使用Rancher公共API机制，并通过定制工具进行暴露，以提供最佳用户体验。
+* **Rancher助手UI扩展**:该组件扩展了Rancher UI以支持{short-project-name}。它通过在UI中嵌入{short-project-name}，超越了简单的聊天窗口。将助手集成在错误消息和状态徽章后，以提供即时的上下文支持。
+
+== 主要特征
+
+=== 灵活的模型主权
+
+认识到安全至关重要，{short-project-name} 提供了关于基础 AI 引擎的选择自由。
+
+* 使用 Ollama 连接到本地或隔离的 LLM，以实现最大的数据隐私。
+* 使用公共引擎进行高性能推理，例如：
+** OpenAI’s ChatGPT
+** 谷歌的 Gemini
+** AWS Bedrock
+
+== 为什么需要 AI 助手？
+
+随着 Kubernetes 环境的扩展，操作人员的 "认知负担" 成指数级增加。{short-project-name} 解决了现代平台操作中的三个关键挑战：
+
+. **缩小技能差距**：Kubernetes 的学习曲线众所周知地陡峭。{short-project-name} 为可能不熟悉特定资源或错误类型的工程师提供即时专家级支持，减少对资深“英雄”工程师的依赖。
+. **加速解决时间**：操作人员可以询问 {short-project-name} 总结名称空间的状态或解释特定故障，而不是手动检查日志或搜索外部文档，从而减少平均解决时间 (MTTR)。
+. **主动系统意识**：{short-project-name} 使得操作立场更加主动。通过询问 "当前哪些部署不健康？" 或 "总结这个集群的健康状况，" 团队可以在问题升级为故障之前识别并修复问题。
+
+[NOTE]
+====
+
+虽然 {short-project-name} 是一个强大的助手，但它旨在扩展人类知识，而不是取代它。用户在应用建议的修复时，应验证 AI 的建议并遵循其组织的标准安全实践。
+
+====

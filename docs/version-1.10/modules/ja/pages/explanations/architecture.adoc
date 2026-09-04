@@ -1,0 +1,149 @@
+include::partial$variables.adoc[]
+
+= アーキテクチャ
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: {project-name}のマルチエージェントアーキテクチャの紹介。
+
+システムは**階層型マルチエージェントエコシステム**として設計されています。中央の**スーパーバイザー ({short-project-name})**を使用して、複数の専門的な**AIエージェント**にリクエストを調整します。各エージェントは1つ以上の**MCP (モデルコンテキストプロトコル)**サーバーに接続されています。
+
+== コンポーネント
+
+=== https://github.com/rancher/rancher-ai-agent[スーパーバイザー ({short-project-name})]
+
+{short-project-name}はシステムのエントリーポイントであり、ユーザーエクスペリエンスのオーケストレーターです。すべての技術的なタスクを直接実行するのではなく、{short-project-name}はインテリジェントな**ルーター**として機能します。
+
+* ユーザーのプロンプトを分析して、必要なドメイン（例：セキュリティ、プロビジョニング、またはContinuous Delivery）を特定します。
+* `AIAgentConfig`メタデータを参照して、タスクに最も適した専門エージェントを選択します。
+* ユーザーの位置をRancher UIで追跡し、関連するクラスター、ネームスペース、およびリソースメタデータがダウンストリームのエージェントに渡されて「コンテキストを意識した」応答を提供することを保証します。
+
+=== 専門的なAIエージェント（「クルー」）
+
+専門エージェントはシステムの働き手です。各エージェントは特定のドメインのインテリジェンスのオーケストレーターです。それは大規模言語モデル（LLM）を推論エンジンとして使用し、エージェント自体はアクションの構造、調整、および安全な実行を提供します。
+
+* **LLM（推論エンジン）**:
+** 自然言語で表現されたユーザー入力を解釈します。
+** 推論を行います：複雑なリクエストを小さなステップに分解します。
+** 次に何が起こるべきかを決定します（推論を続けるか、アクションを取るか）。
+** ツールからの出力を合成して、明確で人間が読みやすい応答を生成します。
+* **エージェント（オーケストレーター）**:
+** LLMをReAct（推論 + アクション）パターンでラップします。
+** LLMが推論を続けるべきか、指示に従うべきかを決定します。
+** LLMの指示に従って外部ツール（MCPサーバー経由）を呼び出します。
+** ユーザーのRancherトークンをMCPサーバーに渡して認証と承認を行うことで、安全なインタラクションを確保します。
+
+=== https://github.com/rancher/rancher-ai-mcp[MCPサーバー]
+
+MCPサーバーは、ReActエージェントとRancherおよびKubernetes APIの間の安全で制御されたゲートウェイとして機能します。その機能には以下が含まれます：
+
+* **ツールの公開**：ReActエージェントが呼び出すことができる、明確に定義された安全なツール（APIエンドポイント）のセットを提供します。これらのツールは、直接的なRancher/Kubernetes APIとのインタラクションの複雑さを抽象化します。
+* **Rancherとのインタラクション**：エージェントからのツール呼び出しをRancher管理サーバーへの適切なAPIリクエストに変換し、必要に応じてリソースを取得または変更します。
+
+=== UI拡張機能
+
+UI拡張機能は、Rancherダッシュボード内のユーザー向けチャットインターフェースを提供します。Rancher体験のシームレスな一部として設計されており、以下の責任があります：
+
+* **ユーザー入力**：ユーザーのクエリをキャプチャし、それをReActエージェントに送信します。
+* **応答の表示**：ReActエージェントからの応答を受け取り、チャット形式で表示します。
+
+== 動作の仕組み（フロー）
+
+1. **ユーザーリクエスト**：ユーザーはUI拡張機能を通じてクエリを送信します。
+2. **スーパーバイザーのルーティング**: {short-project-name} は意図を特定し、クエリとUI拡張機能のコンテキストを専門のエージェント（例えば、Continuous Delivery agent）にルーティングします。
+3. **LLM推論**:専門のエージェントのLLMはリクエストを解釈し、問題について考察し、行動計画を提案します。
+4. **エージェントの行動**:計画に外部操作が必要な場合、エージェントはユーザーの安全なトークンを使用して適切なMCPサーバーツールを呼び出します。
+5. **応答の形成**:LLMはツールの出力を受け取り、一貫性のある人間が読みやすい応答を作成します。
+6. **最終応答**: {short-project-name} はエージェントの合成された回答をUIに返します。
+
+[mermaid]
+----
+
+グラフ TD
+
+サブグラフ "A. ユーザーインタラクション" +
+ユーザー[ユーザー / DevOps] +
+UI[UI拡張] +
+終了する
+
+サブグラフ "B. スーパーバイザー層" +
+リズ{Liz Supervisor} +
+終了する
+
+サブグラフ "C. 専門エージェント（ReAct）" +
+ランチャーエージェント(ランチャーエージェント) +
+Fleet agent(Rancher Continuous Delivery Agent) +
+プロビジョニングエージェント(ランチャープロビジョニングエージェント) +
+アプリコエージェント(SUSEアプリケーションコレクションエージェント) +
+ObsAgent(SUSE Observability Agent) +
+SecAgent(SUSE Security Agent) +
+カスタムエージェント(カスタムエージェント) +
+終了する
+
+サブグラフ "LLM推論階層化（すべてのエージェントに適用）"
+方向 LR
+ローカルLLM[ローカルLLM]
+パブリックLLM[パブリックLLM]
+終了する
+
+サブグラフ "D. インフラストラクチャゲートウェイ"
+MCP1[ランチャーMCP]
+MCP2[アプリケーションコレクションMCP]
+MCP_Obs[オブザーバビリティMCP]
+MCP_Sec[セキュリティMCP]
+MCP4[サードパーティMCP]
+終了する
+
+サブグラフ "E. データ & API"
+ランチャーAPI[(ランチャー / K8s API)]
+アプリコAPI[(アプリケーションコレクションAPI)]
+メトリクスDB[(SUSE Observability / メトリクス)]
+脆弱性DB[(セキュリティ / CVEスキャン)]
+外部API[(外部システム)]
+終了する
+
+%% フロー
+ユーザー -- "1.クエリ" --> UI
+UI -- "2.コンテキスト + 意図" --> リズ
+リズ -- "3.ルート" --> ランチャーエージェント +
+リズ --> Fleet agent +
+リズ --> プロビジョニングエージェント +
+リズ --> アプリコエージェント +
+リズ --> オブザーバビリティエージェント +
+リズ --> セキュリティエージェント +
+リズ --> カスタムエージェント
+
+%% 推論ループの例
+RancherAgent -。"推論エンジン" .->LocalLLM
+RancherAgent -."推論エンジン" .->PublicLLM
+
+%% 理由 + 行動の接続
+RancherAgent -- "4" --> MCP1
+FleetAgent -- "4" --> MCP1
+ProvAgent -- "4" --> MCP1
+AppCoAgent -- "4" --> MCP2
+ObsAgent -- "4" --> MCP_Obs
+SecAgent -- "4" --> MCP_Sec
+CustomAgent -- "4" --> MCP4
+
+%% API接続
+MCP1 -- "5" --> RancherAPI
+MCP2 -- "5" --> AppCoAPI
+MCP_Obs -- "5" --> MetricsDB
+MCP_Sec -- "5" --> VulnDB
+MCP4 -- "5" --> ExternalAPI
+
+%% スタイル
+style Liz fill:#f9f,stroke:#333,stroke-width:2px
+style LocalLLM fill:#fff3cd,stroke:#ffc107,stroke-dasharray:5 5
+style PublicLLM fill:#fff3cd,stroke:#ffc107,stroke-dasharray:5 5
+style Note fill:#fff,stroke:none
+style RancherAgent fill:#d4edda,stroke:#28a745
+style FleetAgent fill:#d4edda,stroke:#28a745
+style ProvAgent fill:#d4edda,stroke:#28a745
+style AppCoAgent fill:#d4edda,stroke:#28a745
+style ObsAgent fill:#d4edda,stroke:#28a745
+style SecAgent fill:#d4edda,stroke:#28a745
+style MCP_Obs fill:#cce5ff,stroke:#007bff
+style MCP_Sec fill:#cce5ff,stroke:#007bff
+----

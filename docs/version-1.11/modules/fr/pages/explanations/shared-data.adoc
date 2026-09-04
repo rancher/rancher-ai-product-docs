@@ -1,0 +1,55 @@
+include::partial$variables.adoc[]
+
+= Données et contexte partagés
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: Comment {project-name} gère le contexte et la collecte sécurisée des données à partir de Rancher et des clusters en aval.
+
+Pour fournir des réponses précises et conscientes du contexte, le système partage des métadonnées spécifiques entre l'interface utilisateur, le superviseur et le serveur MCP des agents spécialisés avec le fournisseur LLM configuré.
+
+== Contexte de l'interface utilisateur
+
+Lorsqu'un utilisateur interagit avec l'interface de chat, le système capture et partage automatiquement le contexte actuel de l'interface utilisateur. Cela garantit que l'agent IA comprend l'attention de l'utilisateur sans nécessiter de mention explicite des ressources.
+
+Le contexte partagé comprend{nbsp}:
+
+* **ID du cluster**{nbsp}: Le cluster actuellement affiché dans le tableau de bord Rancher.
+* **Espace de noms**{nbsp}: Le contexte d'espace de noms spécifique, le cas échéant.
+* **Métadonnées de la ressource**{nbsp}: Détails sur la ressource actuelle (par exemple, un déploiement spécifique, un nœud ou un Fleet Bundle) affichés dans l'interface utilisateur.
+
+Ces données sont regroupées avec l'invite de l'utilisateur par le **Superviseur** et acheminées vers l'agent spécialisé approprié et partagées avec le fournisseur LLM.
+
+== Collecte de données via les outils MCP
+
+L'agent Rancher utilise des outils spécialisés, exposés via le link:https://github.com/rancher/rancher-ai-mcp?tab=readme-ov-file#available-tools[serveur MCP Rancher], pour récupérer des données en temps réel de l'environnement. Ces outils agissent comme le pont entre le raisonnement de l'IA et l'état réel de votre infrastructure.
+
+La liste suivante d'actions définit les données collectées à partir du gestionnaire Rancher et des clusters en aval{nbsp}:
+
+[cols="1,2", options="header"]
+|===
+| Catégorie d'action | Actions spécifiques
+
+| **Ressources Kubernetes**
+| `getKubernetesResource`, `listKubernetesResources`, `getDeployment`
+
+| **Analyse de cluster**
+| `analyzeCluster`, `analyzeClusterMachines`, `getNodes`, `getProject`
+
+| **Continuous Delivery et GitOps**
+| `listGitRepos`, `getGitRepo`, `analyzeFleetResources`
+|===
+
+Ces actions récupèrent des données de l'environnement et partagent le résultat avec le LLM. 
+**Données sensibles** récupérées par ces appels peuvent inclure{nbsp}:
+
+* Secrets et clés API
+* Noms d'utilisateur et groupes
+* Adresses IP et configurations réseau
+
+== Gestion des donnés sensibles
+
+Les données récupérées des clusters en aval, en particulier les journaux de pods et les définitions de ressources, peuvent contenir des informations sensibles. Le système gère ce risque grâce à un modèle de partage de données "sécurisé par conception"{nbsp}:
+
+* L'Agent n'utilise jamais de compte "root" ou "service". Il effectue chaque tâche de collecte de données en utilisant la **permission propre de l'utilisateur**. Cela garantit que l'Agent ne peut "voir" et "partager" que les données auxquelles l'utilisateur est déjà autorisé à accéder via Rancher RBAC.
+* Les données sont récupérées à la demande. Le système ne maintient pas de base de données secondaire des contenus sensibles de votre cluster{nbsp}; il interroge les API Rancher et Kubernetes uniquement lorsqu'un appel d'outil spécifique est déclenché par la boucle de raisonnement de l'Agent.

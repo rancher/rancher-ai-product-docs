@@ -1,0 +1,13 @@
+name: rancher-ai
+title: Rancher AI
+version: "1.10"
+display_version: "1.10-latest"
+start_page: en:introduction.adoc
+nav:
+- modules/en/nav.adoc
+- modules/de/nav.adoc
+- modules/es/nav.adoc
+- modules/fr/nav.adoc
+- modules/ja/nav.adoc
+- modules/pt/nav.adoc
+- modules/zh/nav.adoc

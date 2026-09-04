@@ -1,0 +1,84 @@
+include::partial$variables.adoc[]
+
+= Interaktion mit Liz (KI-Assistentin)
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: Erfahren Sie, wie Sie Liz, den KI-Assistenten in {project-name}, verwenden, um Probleme mit Ressourcen zu beheben und Arbeitslasten zu verwalten.
+
+[#getting-started]
+== Erste Schritte mit Liz
+
+{short-project-name} enthält einen persistierenden KI-Assistenten namens **Liz**. Sie können den Assistenten jederzeit öffnen, indem Sie auf das **Liz-Symbol** image:liz-button.png[Liz-Schaltfläche, width=48] in der Benutzeroberfläche klicken.
+
+Wenn Sie das seitliche Fenster öffnen, begrüßt Sie Liz mit Vorschlägen basierend auf dem Kontext Ihrer aktuellen Seite. Während eines Gesprächs bietet Liz:
+
+* **Zwei vorgeschlagene Aktionen** zur Fortsetzung des aktuellen Workflows.
+* **Eine erkundende Aktion** um mehr über verwandte Themen zu erfahren.
+
+image::chat-panel.png[Liz-Chat-Panel., align="center",  width="50%"]
+
+[#context-aware]
+== Context-Awareness
+
+Liz versteht genau, was Sie sich ansehen. Jede Ressource mit einem Statusabzeichen verfügt über eine **Frag Liz** Schaltfläche.
+
+.  Klicken Sie auf das **Frag Liz-Schiebeschaltfläche**-Symbol neben einer Ressource. image:ask-liz.png[Frag Liz-Schaltfläche, align="center"]
+.  Das seitliche Fenster wird mit einem maßgeschneiderten Prompt geöffnet, der automatisch für diese spezifische Ressource generiert wurde.
+.  Liz sammelt automatisch den Ressourcennamen, die Cluster-ID und den Namespace, um genaue Hilfe zu bieten.
+
+image::context.png[Liz-Kontextschnittstelle, die Cluster- und Namespace-Bewusstsein zeigt., align="center"]
+
+[#user-confirmation]
+== Aktionen bestätigen
+Sicherheit hat Priorität.
+
+Wenn Sie Liz oder einen ihrer spezialisierten Agenten bitten, Ihre Umgebung zu ändern (z. B. eine Implementierung zu aktualisieren oder eine Clusterkonfiguration zu ändern), wird Liz ein Bestätigungsdialogfeld anzeigen. 
+
+image::confirmation.png[Bestätigungsdialogfeld für Umgebungsänderungen., width="50%", align="center"]
+
+Sie müssen auf **Bestätigen** klicken, bevor Änderungen an Ihrem System vorgenommen werden.
+
+[#managing-conversations]
+== Verwalten von Gesprächen
+
+Sie können mehrere Threads verwalten oder Ihren Verlauf für später speichern.
+
+* **Neuen Chat erstellen:** Um eine neue Sitzung zu starten, klicken Sie auf das **Neuer Chat**-Symbol.
+
+image:conversation.png[Neuer Chat-Schaltfläche, width="50%"]
+
+* **Verlauf herunterladen:** Um einen Verlauf Ihres Gesprächs zu speichern, klicken Sie auf das **Herunterladen** Symbol. Dies speichert eine `.txt` Datei des Transkripts auf Ihrem lokalen Laufwerk.
+
+image:download.png[Herunterladen-Schaltfläche, width="50%"]
+
+[#manual-agent-selection]
+== Agenten wechseln
+Standardmäßig verwendet Liz "Intelligente Weiterleitung", um Ihre Anfrage an den besten spezialisierten Agenten zu senden (z. B. einen Sicherheitsagenten für Schwachstellen). 
+
+Wenn Sie manuell mit einem bestimmten Agenten sprechen möchten:
+
+. Klicken Sie auf das **Agentenauswahl** Symbol.
++
+image:multi-agent-selection.png[Agentenauswahl-Schaltfläche, width="50%"]
+
+. Wählen Sie den gewünschten Agenten aus der Liste aus.
+
+NOTE: Wenn Liz bemerkt, dass Sie häufig denselben Agenten verwenden, kann sie vorschlagen, für diese Sitzung in den manuellen Modus zu wechseln.
+
+[#prompt-examples]
+== Beispielanfragen zum Ausprobieren
+
+Nicht sicher, wo Sie anfangen sollen? Versuchen Sie, Liz diese Fragen zu stellen:
+
+[cols="1,2,1", options="header"]
+|===
+| Kategorie | Benutzereingabe | Bearbeitender Agent
+| **Sicherheit** | "Welche meiner laufenden Arbeitslasten sind von Sicherheitsanfälligkeiten betroffen?" | **Sicherheitsagent** (holt CVE- und Scandaten)
+| **Inventar** | "Listen Sie alle Registries auf, die in allen meinen Clustern verwendet werden." | **Rancher-Agent** (fragt clusterweite Ressourcen ab)
+| **Capacity** | "Zeigen Sie mir die 5 Pods, die am meisten Speicher verbrauchen." | **Rancher-Agent** (fragt Ressourcennutzungsdaten ab)
+| **Navigation** | "Was bedeutet dieser Status?" | **Kontextlogik** (interpretiert den Ressourcenstatus aus der Benutzeroberfläche)
+| **Fehlerbehebung** | "Die Anwendung ist langsam; finden Sie die Ursache." | **SUSE Observability Agent** (analysiert Metriken und Protokolle)
+| **Fähigkeiten verbessern** | "Wie installiere ich ein Helm-Chart in Rancher?" | **Wissen** (stellt Dokumentationsquellen bereit)
+| **Bereitstellung** | "Analysieren Sie den Cluster und beheben Sie alle Probleme." | **Rancher-Provisioning-Agent** (überprüft die Infrastrukturgesundheit)
+|===

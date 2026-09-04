@@ -1,0 +1,49 @@
+include::partial$variables.adoc[]
+
+= Modèles validés
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: Une explication des modèles qui ont été validés.
+
+Les modèles suivants sont testés contre l'Agent IA Rancher et le serveur Rancher MCP en utilisant une liste de prompts soigneusement sélectionnée pour valider l'intégration.
+
+[cols="1,3", options="header"]
+|===
+| Provider | Modèles validés
+
+| Gemini
+a| * gemini-2.5-pro
+* gemini-2.5-flash
+* gemini-2.5-flash-lite
+* gemini-3.1-flash-preview
+* gemini-3.1-flash-lite-preview
+* gemini-3.1-pro-preview
+
+| OpenAI
+a| * gpt-4o
+* gpt-4o-mini
+* o3-mini
+* o3
+* gpt-4.1
+* gpt-4
+* gpt-5-mini
+* gpt-5.4
+
+| Ollama
+a| * gpt-oss:20b
+* gpt-oss:120b
+
+| AWS Bedrock
+a| * global.anthropic.claude-opus-4-5-20251101-v1:0
+* anthropic.claude-opus-4-6
+* anthropic.claude-sonnet-4-6
+* anthropic.claude-haiku-4-5-20251001-v1:0
+|===
+
+[NOTE]
+====
+Tout modèle prenant en charge link:https://ollama.com/search?c=tools[les appels d'outils] devrait être compatible.
+
+Pour demander la prise en charge d’un nouveau modèle, veuillez ouvrir link:https://github.com/rancher/rancher-ai-agent/issues[une issue].
+====

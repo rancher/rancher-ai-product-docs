@@ -1,6 +1,0 @@
-include::partial$variables.adoc[]
-= Organização da documentação
-:page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 2025-11-25
-:page-revdate: {revdate}
-:description: Como está organizada a {project-name}documentação?

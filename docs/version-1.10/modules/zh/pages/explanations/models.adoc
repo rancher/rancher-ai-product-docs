@@ -1,0 +1,49 @@
+include::partial$variables.adoc[]
+
+= 验证过的模型
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-09-04
+:page-revdate: {revdate}
+:description: 对已验证模型的说明。
+
+以下模型通过 Rancher AI Agent 和 Rancher MCP 服务器，使用精心挑选的提示词进行测试，以验证其集成效果。
+
+[cols="1,3", options="header"]
+|===
+| 提供器 | 验证过的模型
+
+| Gemini
+a| * gemini-2.5-pro
+* gemini-2.5-flash
+* gemini-2.5-flash-lite
+* gemini-3.1-flash-preview
+* gemini-3.1-flash-lite-preview
+* gemini-3.1-pro-preview
+
+| OpenAI
+a| * gpt-4o
+* gpt-4o-mini
+* o3-mini
+* o3
+* gpt-4.1
+* gpt-4
+* gpt-5-mini
+* gpt-5.4
+
+| Ollama
+a| * gpt-oss:20b
+* gpt-oss:120b
+
+| AWS Bedrock
+a| * global.anthropic.claude-opus-4-5-20251101-v1:0
+* anthropic.claude-opus-4-6
+* anthropic.claude-sonnet-4-6
+* anthropic.claude-haiku-4-5-20251001-v1:0
+|===
+
+[NOTE]
+====
+任何支持 link:https://ollama.com/search?c=tools[工具调用] 的模型都应该是兼容的。
+
+要请求对新模型的支持，请打开一个 link:https://github.com/rancher/rancher-ai-agent/issues[issue]。
+====
