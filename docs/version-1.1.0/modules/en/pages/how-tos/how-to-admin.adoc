@@ -16,7 +16,7 @@ To upgrade the `rancher-ai-agent` helm chart, run the following command:
 [source,console]
 ----
 helm upgrade rancher-ai-agent --namespace cattle-ai-agent-system \
-    oci://stgregistry.suse.com/rancher/charts/rancher-ai-agent \
+    oci://registry.suse.com/rancher/charts/rancher-ai-agent \
     --version 109.0.1+up1.0.2
 ----
 
