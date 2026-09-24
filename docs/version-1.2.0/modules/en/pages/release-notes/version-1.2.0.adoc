@@ -1,6 +1,7 @@
 include::partial$variables.adoc[]
 
 = {project-name} v1.2.0 Release Highlights
+:description: Find the most important changes in the v1.2.0 release, including new features, core improvements, and security updates
 :revdate: 2026-09-04
 :page-revdate: {revdate}
 

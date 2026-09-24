@@ -1,6 +1,7 @@
 include::partial$variables.adoc[]
 
 = {project-name} v1.1.0 Release Highlights
+:description: Learn the key new features, improvements, and bug fixes in the v1.1.0 release
 :revdate: 2026-09-04
 :page-revdate: {revdate}
 
