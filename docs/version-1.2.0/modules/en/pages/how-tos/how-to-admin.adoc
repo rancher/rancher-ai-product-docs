@@ -1014,6 +1014,39 @@ This Global role provide a very limited access to Rancher Manager.
 It grant access to Agent endpoint running in the local cluster.
 ====
 
+[#rbac-restrict-agents]
+=== Restrict access to specific agents
+
+The **{short-project-name} (Rancher AI Assistant) User** role gives access to all agents, including custom agents. Users only see the agents that they can access.
+
+To limit a user to specific agents, create a new **Global Role**:
+
+. Navigate to **Users & Authentication** > **Role Templates** > **Global**.
+. Find the **{short-project-name} (Rancher AI Assistant) User** role and select **Clone** from its menu.
+. Enter a new name and a description.
+. Click **Edit as YAML**.
+. Replace the `aiagentconfigs` rule with a rule that lists the allowed agents:
++
+[source,yaml]
+----
+- apiGroups:
+    - ai.cattle.io
+  resources:
+    - aiagentconfigs
+  verbs:
+    - get
+    - watch
+  resourceNames:
+    - rancher
+    - fleet
+----
+. Click **Create**.
+. Assign the new role to the user instead of the **{short-project-name} (Rancher AI Assistant) User** role.
+
+Access granted to a user and to their groups is combined. Administrators see all agents.
+
+To let all users see all agents, set `aiAgent.rbac.enabled` to `false` in your `values.yaml`.
+
 [#mcp-read-only]
 == Rancher MCP read-only mode
 
