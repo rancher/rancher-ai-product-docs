@@ -280,7 +280,7 @@ UI form.
 
 Extend {short-project-name}’s capabilities by configuring specialized AI Agents.
 
-These agents allow {short-project-name} to handle specific domains such as GitOps, Cluster Provisioning areas (CAPI resources, K3k), Security and Observability.
+These agents allow {short-project-name} to handle specific domains such as GitOps, Cluster Provisioning areas (CAPI resources, K3k), Security, Observability, and Virtualization.
 
 {short-project-name} is deployed with 3 built-in AI agents by default:
 
@@ -691,6 +691,13 @@ Follow the instruction defined on the offical SBOMscanner link:https://documenta
 =====
 The SBOMScanner MCP server can be started with `TLS`, please use the programmatic Installation and use `caBundleRef` to load the custom CA bundle see xref:how-tos/how-to-admin.adoc#mcp-trust-custom-cert[MCP with custom certs] for more details.
 =====
+--
+SUSE Virtualization::
++
+--
+The **SUSE Virtualization** agent helps you inspect and manage your SUSE Virtualization environment. In read-only mode, the agent can list virtual machines, images, volumes, virtual machine networks, cluster networks, and hosts, and inspect volumes, including their Longhorn details. In write mode, the agent can also import virtual machine images from a URL, preview a virtual machine manifest, and create virtual machines from existing images.
+
+Follow the instructions in the official SUSE Virtualization link:https://scc.suse.com/rancher-docs/rancherprime/latest/en/suse-virtualization/mcp-server.html[documentation] to set up the integration.
 --
 CloudCasa::
 +
